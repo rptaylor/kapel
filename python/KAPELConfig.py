@@ -39,8 +39,8 @@ class KAPELConfig:
         # Format: https://prometheus.io/docs/prometheus/latest/querying/basics/#time-durations
         self.query_timeout = env.str("QUERY_TIMEOUT", "300s")
 
-        # Where to write the APEL message output.
-        self.output_path = env.path("OUTPUT_PATH")
+        # Where to write the APEL message output. /srv/kapel by default
+        self.output_path = env.path("OUTPUT_PATH", "/srv/kapel")
 
         ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat 
         # GOCDB site name
