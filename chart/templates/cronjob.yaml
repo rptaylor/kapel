@@ -62,7 +62,7 @@ spec:
                   mountPath: /srv/kapel
           containers:
             - name: {{ .Release.Name }}-ssmsend
-              image: {{ .Values.ssmsend.image_repository | quote }}:{{ .Values.ssmsend.image_tag | quote | default .Chart.AppVersion }}
+              image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
               resources:
                 {{- toYaml .Values.ssmsend.resources | nindent 16 }}
               command: ["/bin/bash"]
