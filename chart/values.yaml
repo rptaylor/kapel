@@ -24,7 +24,13 @@ processor:
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
 
 ssmsend:
-  resources: {}  # TBD
+  resources:
+    limits:
+      cpu: "0.5"
+      memory: "500Mi"
+    requests:
+      cpu: "0.1"
+      memory: "50Mi"
   # Location of ssmsend container
   image_repository: ""
   # Optionally overwrite container version. Default is chart appVersion.
