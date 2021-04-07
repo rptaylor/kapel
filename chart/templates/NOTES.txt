@@ -1,1 +1,1 @@
-1. The accounting cron job should be running now. Check the pod logs.
+1. The kapel accounting cron job should be running now. When the kapel pod runs check the logs of the processor and ssmsend containers.

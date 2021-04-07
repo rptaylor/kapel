@@ -66,8 +66,7 @@ spec:
               resources:
                 {{- toYaml .Values.ssmsend.resources | nindent 16 }}
               command: ["/bin/bash"]
-#              args: ["-c", "mkdir $HOME; ssmsend -c /ssmsend-config/sender.cfg; sleep 3d"]
-              args: ["-c", "mkdir $HOME; sleep 1h"]
+              args: ["-c", "mkdir $HOME; ssmsend -c /ssmsend-config/sender.cfg"]
               env:
                 # for openssl ~/.rnd
                 - name: HOME
