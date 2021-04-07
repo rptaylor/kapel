@@ -1,0 +1,82 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "kapel.fullname" . }}
+  labels:
+    {{- include "kapel.labels" . | nindent 4 }}
+spec:
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 50
+  failedJobsHistoryLimit: 10
+  startingDeadlineSeconds: 1800
+  schedule: "{{ .Values.cronjob.schedule }}"
+  jobTemplate:
+    spec:
+      # Allow up to 12 hours and 2 pod retries for job completion (should be less than cron frequency)
+      activeDeadlineSeconds: 43200
+      backoffLimit: 2
+      template:
+        spec:
+          # Allow up to 4 hours for pod completion
+          activeDeadlineSeconds: 14400
+          # If a container fails, fail the pod (job controller will make a fresh new pod)
+          restartPolicy: "Never"
+          securityContext:
+            runAsNonRoot: true
+          volumes:
+            - name: ssmsend-config-volume
+              configMap:
+                name: {{ template "kapel.fullname" . }}-ssmsend-config
+            - name: ssmsend-secret-volume
+              secret:
+                secretName: {{ template "kapel.fullname" . }}-ssmsend-secret
+                defaultMode: 0400
+            - name: grid-security-volume
+              hostPath:
+                path: /cvmfs/grid.cern.ch/etc/grid-security/certificates/
+                type: Directory
+            - name: apel-data-volume
+              emptyDir:
+                sizeLimit: 1000M
+            - name: apel-run-volume
+              emptyDir:
+                sizeLimit: 50M
+          initContainers:
+            - name: {{ template "kapel.fullname" . }}-processor
+              image: library/python:3
+              resources:
+                {{- toYaml .Values.processor.resources | nindent 16 }}
+              command: ["/bin/bash"]
+              args: ["-c", "mkdir $HOME; git -C $HOME clone https://github.com/rptaylor/kapel.git; cd ~/kapel/python; pip install -r requirements.txt; python KAPEL.py"]
+              envFrom:
+                - configMapRef:
+                    name: {{ template "kapel.fullname" . }}-processor-config
+              volumeMounts:
+                - name: apel-data-volume
+                  mountPath: /srv/kapel
+          containers:
+            - name: {{ template "kapel.fullname" . }}-ssmsend
+              image: "{{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}"
+              resources:
+                {{- toYaml .Values.ssmsend.resources | nindent 16 }}
+              command: ["/bin/bash"]
+#              args: ["-c", "mkdir $HOME; ssmsend -c /ssmsend-config/sender.cfg; sleep 3d"]
+              args: ["-c", "mkdir $HOME; sleep 1h"]
+              env:
+                # for openssl ~/.rnd
+                - name: HOME
+                  value: /tmp/home
+              volumeMounts:
+                - name: ssmsend-config-volume
+                  mountPath: "/ssmsend-config"
+                  readOnly: true
+                - name: ssmsend-secret-volume
+                  mountPath: "/ssmsend-certs"
+                  readOnly: true
+                - name: grid-security-volume
+                  mountPath: /etc/grid-security/certificates
+                  readOnly: true
+                - name: apel-data-volume
+                  mountPath: /var/spool/apel/outgoing
+                - name: apel-run-volume
+                  mountPath: /var/run/apel

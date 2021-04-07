@@ -1,0 +1,36 @@
+---
+cronjob:
+  schedule: "@daily"
+
+processor:
+  resources:
+    # generous estimate: approx 330 MiB to process a month with 32K records
+    limits:
+      cpu: "1"
+      memory: "2000Mi"
+    requests:
+      cpu: "0.5"
+      memory: "200Mi"
+  # See KAPELConfig.py for full details on required configuration
+  config: |-
+    SITE_NAME = 'EXAMPLE-T2'
+    SUBMIT_HOST = 'k8s.example.org:6443/namespace'
+
+ssmsend:
+  resources: {}  # TBD
+  # Location of ssmsend container
+  image_repository: ""
+  # Optionally overwrite container version. Default is chart appVersion.
+  image_tag: ""
+  host: "msg.argo.grnet.gr"
+  hostcert: |-
+    -----BEGIN CERTIFICATE-----
+    ... put your X509 public host cert for APEL publisher here ...
+    -----END CERTIFICATE-----
+  hostkey: |-
+    -----BEGIN RSA PRIVATE KEY-----
+    ... put your X509 SECRET PRIVATE KEY for APEL publisher here ...
+    -----END RSA PRIVATE KEY-----
+
+nameOverride: ""
+fullnameOverride: ""
