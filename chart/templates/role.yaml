@@ -13,3 +13,10 @@ rules:
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["get", "list", "create", "update", "patch", "delete"]
+{{ if .Values.pspName }}
+  - apiGroups: ["policy"]
+    resources: ["podsecuritypolicies"]
+    verbs: ["use"]
+    resourceNames:
+      - {{ .Values.pspName | quote }}
+{{ end }}

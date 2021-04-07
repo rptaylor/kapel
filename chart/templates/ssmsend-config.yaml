@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "kapel.fullname" . }}-ssmsend-config
+  name: {{ .Release.Name }}-ssmsend-config
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:

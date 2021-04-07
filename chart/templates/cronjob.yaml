@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "kapel.fullname" . }}
+  name: {{ .Release.Name }}-cronjob
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 spec:
@@ -26,15 +26,17 @@ spec:
           volumes:
             - name: ssmsend-config-volume
               configMap:
-                name: {{ template "kapel.fullname" . }}-ssmsend-config
+                name: {{ .Release.Name }}-ssmsend-config
             - name: ssmsend-secret-volume
               secret:
-                secretName: {{ template "kapel.fullname" . }}-ssmsend-secret
+                secretName: {{ .Release.Name }}-ssmsend-secret
                 defaultMode: 0400
+            {{ if .Values.gridSecurityHostPath }}
             - name: grid-security-volume
               hostPath:
                 path: /cvmfs/grid.cern.ch/etc/grid-security/certificates/
                 type: Directory
+            {{ end }}
             - name: apel-data-volume
               emptyDir:
                 sizeLimit: 1000M
@@ -42,7 +44,7 @@ spec:
               emptyDir:
                 sizeLimit: 50M
           initContainers:
-            - name: {{ template "kapel.fullname" . }}-processor
+            - name: {{ .Release.Name }}-processor
               image: library/python:3
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
@@ -54,13 +56,13 @@ spec:
                   value: /tmp/home
               envFrom:
                 - configMapRef:
-                    name: {{ template "kapel.fullname" . }}-processor-config
+                    name: {{ .Release.Name }}-processor-config
               volumeMounts:
                 - name: apel-data-volume
                   mountPath: /srv/kapel
           containers:
-            - name: {{ template "kapel.fullname" . }}-ssmsend
-              image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
+            - name: {{ .Release.Name }}-ssmsend
+              image: {{ .Values.ssmsend.image_repository | quote }}:{{ .Values.ssmsend.image_tag | quote | default .Chart.AppVersion }}
               resources:
                 {{- toYaml .Values.ssmsend.resources | nindent 16 }}
               command: ["/bin/bash"]
@@ -77,9 +79,11 @@ spec:
                 - name: ssmsend-secret-volume
                   mountPath: /ssmsend-certs
                   readOnly: true
+                {{ if .Values.gridSecurityHostPath }}
                 - name: grid-security-volume
                   mountPath: /etc/grid-security/certificates
                   readOnly: true
+                {{ end }}
                 - name: apel-data-volume
                   mountPath: /var/spool/apel/outgoing
                 - name: apel-run-volume
