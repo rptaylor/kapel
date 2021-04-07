@@ -12,8 +12,8 @@ processor:
       memory: "200Mi"
   # See KAPELConfig.py for full details on required configuration
   config: |-
-    SITE_NAME = 'EXAMPLE-T2'
-    SUBMIT_HOST = 'k8s.example.org:6443/namespace'
+    SITE_NAME: "EXAMPLE-T2"
+    SUBMIT_HOST: "k8s.example.org:6443/namespace"
 
 ssmsend:
   resources: {}  # TBD

@@ -4,4 +4,5 @@ metadata:
   name: {{ template "kapel.fullname" . }}-processor-config
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
-data: {{ toYaml .Values.processor.config | indent 2 }}
+data:
+{{ .Values.processor.config | indent 2 }}
