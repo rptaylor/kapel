@@ -9,7 +9,7 @@ spec:
   successfulJobsHistoryLimit: 50
   failedJobsHistoryLimit: 10
   startingDeadlineSeconds: 1800
-  schedule: {{ .Values.cronjob.schedule }}
+  schedule: {{ .Values.cronjob.schedule | quote }}
   jobTemplate:
     spec:
       # Allow up to 12 hours and 2 pod retries for job completion (should be less than cron frequency)
