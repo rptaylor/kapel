@@ -9,7 +9,7 @@ spec:
   successfulJobsHistoryLimit: 50
   failedJobsHistoryLimit: 10
   startingDeadlineSeconds: 1800
-  schedule: "{{ .Values.cronjob.schedule }}"
+  schedule: {{ .Values.cronjob.schedule }}
   jobTemplate:
     spec:
       # Allow up to 12 hours and 2 pod retries for job completion (should be less than cron frequency)
@@ -20,7 +20,7 @@ spec:
           # Allow up to 4 hours for pod completion
           activeDeadlineSeconds: 14400
           # If a container fails, fail the pod (job controller will make a fresh new pod)
-          restartPolicy: "Never"
+          restartPolicy: Never
           securityContext:
             runAsNonRoot: true
           volumes:
@@ -60,7 +60,7 @@ spec:
                   mountPath: /srv/kapel
           containers:
             - name: {{ template "kapel.fullname" . }}-ssmsend
-              image: "{{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}"
+              image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
               resources:
                 {{- toYaml .Values.ssmsend.resources | nindent 16 }}
               command: ["/bin/bash"]
@@ -72,10 +72,10 @@ spec:
                   value: /tmp/home
               volumeMounts:
                 - name: ssmsend-config-volume
-                  mountPath: "/ssmsend-config"
+                  mountPath: /ssmsend-config
                   readOnly: true
                 - name: ssmsend-secret-volume
-                  mountPath: "/ssmsend-certs"
+                  mountPath: /ssmsend-certs
                   readOnly: true
                 - name: grid-security-volume
                   mountPath: /etc/grid-security/certificates
