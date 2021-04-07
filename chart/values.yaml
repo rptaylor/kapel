@@ -1,6 +1,14 @@
 cronjob:
   schedule: "@daily"
 
+# If true, /cvmfs/grid.cern.ch/etc/grid-security/certificates/ will be mounted as a hostPath volume.
+# If false, you will need to set up an alternative way of providing the ca-policy-* packages and CRLs in the ssmsend container.
+gridSecurityHostPath: true
+
+# If pspName is defined, this PSP will be used. If gridSecurityHostPath, use of a (read-only) /cvmfs hostPath is required.
+# Other than that no special privileges are required so a default PSP should be sufficient.
+pspName: ""
+
 processor:
   resources:
     # generous estimate: approx 330 MiB to process a month with 32K records
@@ -11,7 +19,7 @@ processor:
       cpu: "0.5"
       memory: "200Mi"
   # See KAPELConfig.py for full details on required configuration
-  config: |-
+  config: |
     SITE_NAME: "EXAMPLE-T2"
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
 
