@@ -30,14 +30,10 @@ ssmsend:
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
   host: "msg.argo.grnet.gr"
-  hostcert: |-
-    -----BEGIN CERTIFICATE-----
-    ... put your X509 public host cert for APEL publisher here ...
-    -----END CERTIFICATE-----
-  hostkey: |-
-    -----BEGIN RSA PRIVATE KEY-----
-    ... put your X509 SECRET PRIVATE KEY for APEL publisher here ...
-    -----END RSA PRIVATE KEY-----
+  # base64-encoded strings of the X509 public host cert and private key for APEL publisher.
+  # Using a base64 encoded string with no line breaks avoids issues of indentation and double YAML encoding if Ansible is used for Helm.
+  hostcert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgaG9zdCBjZXJ0IGZvciBBUEVMIHB1Ymxpc2hlcgo=
+  hostkey: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGhvc3Qga2V5IGZvciBBUEVMIHB1Ymxpc2hlcgo=
 
 nameOverride: ""
 fullnameOverride: ""
