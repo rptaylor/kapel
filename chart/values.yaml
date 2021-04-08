@@ -11,13 +11,13 @@ pspName: ""
 
 processor:
   resources:
-    # generous estimate: approx 330 MiB to process a month with 32K records
+    # very generous estimate: approx 10 KiB memory per job record
     limits:
       cpu: "1"
       memory: "2000Mi"
     requests:
       cpu: "0.5"
-      memory: "200Mi"
+      memory: "500Mi"
   # See KAPELConfig.py for full details on required configuration
   config: |
     SITE_NAME: "EXAMPLE-T2"
