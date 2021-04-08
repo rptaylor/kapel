@@ -7,7 +7,6 @@
 # (wherein the main container would run ssmsend) launched as a CronJob.
 
 # Requires python >= 3.6 for new f-strings
-# Memory usage estimate: ~ 330 MiB when processing a month with 32K records
 
 import argparse
 import dateutil.relativedelta
