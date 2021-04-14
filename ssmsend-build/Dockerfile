@@ -1,6 +1,6 @@
 FROM registry.hub.docker.com/library/centos:7
 
-#RUN yum update -y
+RUN yum update -y
 # TODO remove openssl after it is made an explicit dependency via https://github.com/apel/ssm/issues/158 
 # EPEL is needed for python-dirq
 RUN yum install -y openssl epel-release
