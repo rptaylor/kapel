@@ -66,7 +66,11 @@ spec:
               resources:
                 {{- toYaml .Values.ssmsend.resources | nindent 16 }}
               command: ["/bin/bash"]
+              {{ if .Values.ssmsend.enabled }}
               args: ["-c", "mkdir $HOME; ssmsend -c /ssmsend-config/sender.cfg"]
+              {{ else }}
+              args: ["-c", "mkdir $HOME; echo 'ssmsend disabled'; sleep 3600"]
+              {{ end }}
               env:
                 # for openssl ~/.rnd
                 - name: HOME
