@@ -8,4 +8,4 @@ APEL accounting for Kubernetes.
   - You should ensure that the Prometheus deployment is configured to use persistent storage so the collected metrics data will be
     persisted for a sufficient period of time.
 - X509 host certificate and key for publishing APEL records with ssmsend
-- ssmsend container built using the provided Dockerfile
+- ssmsend container built using the provided Containerfile

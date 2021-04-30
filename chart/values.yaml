@@ -31,6 +31,8 @@ ssmsend:
     requests:
       cpu: "0.1"
       memory: "50Mi"
+  # Whether to actually send data. Use false for testing.
+  enabled: true
   # Location of ssmsend container
   image_repository: ""
   # Optionally overwrite container version. Default is chart appVersion.
