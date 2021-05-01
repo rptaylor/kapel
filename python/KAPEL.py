@@ -87,7 +87,7 @@ def getTimePeriods(mode, startTime=None, endTime=None):
     elif mode == 'gap':
         return getGapTimePeriods(start=startTime, end=endTime)
     else:
-        raise ValueError("Invalid mode")
+        raise ValueError('Invalid mode')
 
 def getGapTimePeriods(start, end):
     assert isinstance(start, datetime.datetime), "start is not type datetime.datetime"
@@ -110,7 +110,7 @@ def getGapTimePeriods(start, end):
     assert len(intervals) >= 2
     # finally we have a list of intervals. Each item will be the start of a monthly publishing period, going until the next item.
 
-    print("intervals:")
+    print('\nintervals:')
     for i in intervals:
         print(i.isoformat())
 
@@ -120,10 +120,10 @@ def getGapTimePeriods(start, end):
         # process all except the last item, since last one has already been used as the end for the previous item
         if i < len(intervals) - 1:
             thisMonth = {
-                "year": time.year,
-                "month": time.month,
-                "queryInstant": intervals[i + 1].isoformat(),
-                "queryRangeSeconds": int((intervals[i + 1] - time).total_seconds())
+                'year': time.year,
+                'month': time.month,
+                'queryInstant': intervals[i + 1].isoformat(),
+                'queryRangeSeconds': int((intervals[i + 1] - time).total_seconds())
             }
             periods.append(thisMonth)
 
@@ -141,7 +141,7 @@ def rearrange(x):
 # takes a KAPELConfig object and one element of output from getTimePeriods
 def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
-    print(f'Processing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
+    print(f'\nProcessing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
     queries = QueryLogic(queryRange=iRange)
 
     # SSL generally not used for Prometheus access within a cluster
@@ -191,16 +191,20 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    outFile = dirq.add(summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime)))
+    outputMessage = summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime))
+    outFile = dirq.add(outputMessage)
     end = timer()
-    print(f'Processed {len(endtime)} records in {end - start} s, output written to {config.output_path}/{outFile}')
+    print(f'Processed {len(endtime)} records in {end - start} s, writing output to {config.output_path}/{outFile}:')
+    print('--------------------------------')
+    print(outputMessage)
+    print('--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
     cfg = KAPELConfig(envFile)
 
     periods = getTimePeriods(cfg.publishing_mode, startTime=cfg.query_start, endTime=cfg.query_end)
-    print('time periods:')
+    print('\ntime periods:')
     print(periods)
 
     for i in periods:
