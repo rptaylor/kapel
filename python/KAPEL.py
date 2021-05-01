@@ -187,6 +187,9 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
         summary_cputime += cputime[key]
         summary_walltime += walltime
 
+    summary_cputime = round(summary_cputime)
+    summary_walltime = round(summary_walltime)
+
     print(f'total cputime: {summary_cputime}, total walltime: {summary_walltime}')
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
@@ -195,7 +198,7 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     outFile = dirq.add(outputMessage)
     end = timer()
     print(f'Processed {len(endtime)} records in {end - start} s, writing output to {config.output_path}/{outFile}:')
-    print('--------------------------------\n' + outputMessage + '--------------------------------\n')
+    print('--------------------------------\n' + outputMessage + '--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
