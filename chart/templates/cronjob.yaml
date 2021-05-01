@@ -49,7 +49,7 @@ spec:
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
               command: ["/bin/bash"]
-              args: ["-c", "mkdir $HOME; git -C $HOME clone https://github.com/rptaylor/kapel.git; cd ~/kapel/python; pip install --user -r requirements.txt; python KAPEL.py"]
+              args: ["-c", "mkdir $HOME; git -C $HOME clone https://github.com/rptaylor/kapel.git; cd ~/kapel/python; pip install -r requirements.txt; python KAPEL.py"]
               env:
                 # for pip installation
                 - name: HOME
