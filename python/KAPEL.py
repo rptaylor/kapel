@@ -110,7 +110,7 @@ def getGapTimePeriods(start, end):
     assert len(intervals) >= 2
     # finally we have a list of intervals. Each item will be the start of a monthly publishing period, going until the next item.
 
-    print('\nintervals:')
+    print('intervals:')
     for i in intervals:
         print(i.isoformat())
 
@@ -141,7 +141,7 @@ def rearrange(x):
 # takes a KAPELConfig object and one element of output from getTimePeriods
 def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
-    print(f'\nProcessing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
+    print(f'Processing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
     queries = QueryLogic(queryRange=iRange)
 
     # SSL generally not used for Prometheus access within a cluster
@@ -196,8 +196,6 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     end = timer()
     print(f'Processed {len(endtime)} records in {end - start} s, writing output to {config.output_path}/{outFile}:')
     print('--------------------------------\n' + outputMessage + '--------------------------------\n')
-#    print(outputMessage)
-#    print('--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
@@ -205,7 +203,7 @@ def main(envFile):
     cfg = KAPELConfig(envFile)
 
     periods = getTimePeriods(cfg.publishing_mode, startTime=cfg.query_start, endTime=cfg.query_end)
-    print('\ntime periods:')
+    print('time periods:')
     print(periods)
 
     for i in periods:
