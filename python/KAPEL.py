@@ -68,7 +68,7 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
       f'ServiceLevel: {config.benchmark_value * 250}\n'
       f'WallDuration: {wallDuration}\n'
       f'CpuDuration: {cpuDuration}\n'
-      f'NumberOfJobs: {numJobs}\n'
+      f'NumberOfJobs: {numJobs}'
     )
     return output
 
