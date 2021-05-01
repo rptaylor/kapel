@@ -54,6 +54,9 @@ spec:
                 # for pip installation
                 - name: HOME
                   value: /tmp/home
+                # ignore pip warning
+                - name: PIP_NO_WARN_SCRIPT_LOCATION
+                  value: 0
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-processor-config
