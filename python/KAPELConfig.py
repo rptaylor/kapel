@@ -2,7 +2,7 @@
 
 from environs import Env
 
-# Read config settings from environment variables (and a named env file in CWD if specified), 
+# Read config settings from environment variables (and a named env file in CWD if specified),
 # do input validation, and return a config object. Note, if a '.env' file exists in CWD it will be used by default.
 class KAPELConfig:
     def __init__(self, envFile=None):
@@ -17,7 +17,7 @@ class KAPELConfig:
         # The default behaviour ("auto" mode) is to publish records for the previous month, and up to the current day of the current month.
         self.publishing_mode = env.str("PUBLISHING_MODE", "auto")
 
-        # If PUBLISH_MODE is "gap" instead, then a fixed time period will be queried instead and we need the start and end to be specified. 
+        # If PUBLISH_MODE is "gap" instead, then a fixed time period will be queried instead and we need the start and end to be specified.
         # Format: ISO 8601, like "2020-12-20T07:20:50.52Z", to avoid complications with time zones and leap seconds.
         # Timezone should be specified, and it should be UTC for consistency with the auto mode publishing.
         # IMPORTANT NOTE: since only APEL summary records are supported (not individual job records),
@@ -42,7 +42,7 @@ class KAPELConfig:
         # Where to write the APEL message output. /srv/kapel by default
         self.output_path = env.path("OUTPUT_PATH", "/srv/kapel")
 
-        ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat 
+        ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat
         # GOCDB site name
         self.site_name = env.str("SITE_NAME")
 
@@ -61,4 +61,3 @@ class KAPELConfig:
         # infrastructure info
         self.infrastructure_type = env.str("INFRASTRUCTURE_TYPE", "grid")
         self.infrastructure_description = env.str("INFRASTRUCTURE_DESCRIPTION", "APEL-KUBERNETES")
-

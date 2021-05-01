@@ -55,20 +55,20 @@ class QueryLogic:
 
 def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
     output = (
-      f'APEL-summary-job-message: v0.3\n'
-      f'Site: {config.site_name}\n'
-      f'Month: {month}\n'
-      f'Year: {year}\n'
-      f'VO: {config.vo_name}\n'
-      f'SubmitHost: {config.submit_host}\n'
-      f'InfrastructureType: {config.infrastructure_type}\n'
-      #f'InfrastructureDescription: {config.infrastructure_description}\n'
-      # si2k = HS06 * 250
-      f'ServiceLevelType: si2k\n'
-      f'ServiceLevel: {config.benchmark_value * 250}\n'
-      f'WallDuration: {wallDuration}\n'
-      f'CpuDuration: {cpuDuration}\n'
-      f'NumberOfJobs: {numJobs}\n'
+        f'APEL-summary-job-message: v0.3\n'
+        f'Site: {config.site_name}\n'
+        f'Month: {month}\n'
+        f'Year: {year}\n'
+        f'VO: {config.vo_name}\n'
+        f'SubmitHost: {config.submit_host}\n'
+        f'InfrastructureType: {config.infrastructure_type}\n'
+        #f'InfrastructureDescription: {config.infrastructure_description}\n'
+        # si2k = HS06 * 250
+        f'ServiceLevelType: si2k\n'
+        f'ServiceLevel: {config.benchmark_value * 250}\n'
+        f'WallDuration: {wallDuration}\n'
+        f'CpuDuration: {cpuDuration}\n'
+        f'NumberOfJobs: {numJobs}\n'
     )
     return output
 
@@ -81,13 +81,13 @@ def getTimePeriods(mode, startTime=None, endTime=None):
         # get current time of script execution, in ISO8601 and UTC, ignoring microseconds.
         # This will be the singular reference time with respect to which we determine other times.
         runTime = datetime.datetime.now(tz=datetime.timezone.utc).replace(microsecond=0)
-        startOfThisMonth = runTime.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+        startOfThisMonth = runTime.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         startOfLastMonth = startOfThisMonth + dateutil.relativedelta.relativedelta(months=-1)
         return getGapTimePeriods(start=startOfLastMonth, end=runTime)
     elif mode == 'gap':
         return getGapTimePeriods(start=startTime, end=endTime)
     else:
-        raise ValueError("Invalid mode")
+        raise ValueError('Invalid mode')
 
 def getGapTimePeriods(start, end):
     assert isinstance(start, datetime.datetime), "start is not type datetime.datetime"
@@ -95,13 +95,13 @@ def getGapTimePeriods(start, end):
     assert start < end, "start is not after end"
 
     # To avoid invalid dates (e.g. Feb 30) use the very beginning of the month to determine intervals
-    intervalStart = start.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+    intervalStart = start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     assert intervalStart <= start
     # https://dateutil.readthedocs.io/en/stable/rrule.html
     intervals = list(rrule(freq=MONTHLY, dtstart=intervalStart, until=end))
     assert len(intervals) >= 1
 
-    # Replace the 1st element of the list (which has day artificially set to 1) with the real start 
+    # Replace the 1st element of the list (which has day artificially set to 1) with the real start
     intervals.pop(0)
     intervals.insert(0, start)
     # make sure end is after the last interval, then add it as the last
@@ -110,7 +110,7 @@ def getGapTimePeriods(start, end):
     assert len(intervals) >= 2
     # finally we have a list of intervals. Each item will be the start of a monthly publishing period, going until the next item.
 
-    print("intervals:")
+    print('intervals:')
     for i in intervals:
         print(i.isoformat())
 
@@ -120,10 +120,10 @@ def getGapTimePeriods(start, end):
         # process all except the last item, since last one has already been used as the end for the previous item
         if i < len(intervals) - 1:
             thisMonth = {
-                "year": time.year,
-                "month": time.month,
-                "queryInstant": intervals[i + 1].isoformat(),
-                "queryRangeSeconds": int((intervals[i + 1] - time).total_seconds())
+                'year': time.year,
+                'month': time.month,
+                'queryInstant': intervals[i + 1].isoformat(),
+                'queryRangeSeconds': int((intervals[i + 1] - time).total_seconds())
             }
             periods.append(thisMonth)
 
@@ -134,8 +134,8 @@ def getGapTimePeriods(start, end):
 # Cast from string to float while we're at it.
 # NB: this overwrites duplicate results if we get any from the prom query!
 def rearrange(x):
-  for item in x:
-    yield item['metric']['exported_pod'], float(item['value'][1])
+    for item in x:
+        yield item['metric']['exported_pod'], float(item['value'][1])
 
 # process a time period (do prom query, process data, write output)
 # takes a KAPELConfig object and one element of output from getTimePeriods
@@ -167,7 +167,7 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     starttime = results['starttime']
     cores = results['cores']
 
-    # Confirm the assumption that cputime (and endtime) should have the fewest entries, while starttime and cores may have additional ones 
+    # Confirm the assumption that cputime (and endtime) should have the fewest entries, while starttime and cores may have additional ones
     # corresponding to jobs that have started but not finished yet. We only want the (completed) jobs for which all values are available.
     assert len(endtime) == min(resultLengths), "endtime should be the shortest list"
 
@@ -187,16 +187,22 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
         summary_cputime += cputime[key]
         summary_walltime += walltime
 
+    summary_cputime = round(summary_cputime)
+    summary_walltime = round(summary_walltime)
+
     print(f'total cputime: {summary_cputime}, total walltime: {summary_walltime}')
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    outFile = dirq.add(summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime)))
+    outputMessage = summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime))
+    outFile = dirq.add(outputMessage)
     end = timer()
-    print(f'Processed {len(endtime)} records in {end - start} s, output written to {config.output_path}/{outFile}')
+    print(f'Processed {len(endtime)} records in {end - start} s, writing output to {config.output_path}/{outFile}:')
+    print('--------------------------------\n' + outputMessage + '--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
+    print('Starting KAPEL processor: ' + __file__)
     cfg = KAPELConfig(envFile)
 
     periods = getTimePeriods(cfg.publishing_mode, startTime=cfg.query_start, endTime=cfg.query_end)
@@ -204,8 +210,8 @@ def main(envFile):
     print(periods)
 
     for i in periods:
-      r = str(i['queryRangeSeconds']) + 's'
-      processPeriod(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
+        r = str(i['queryRangeSeconds']) + 's'
+        processPeriod(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")
