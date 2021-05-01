@@ -68,7 +68,7 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
       f'ServiceLevel: {config.benchmark_value * 250}\n'
       f'WallDuration: {wallDuration}\n'
       f'CpuDuration: {cpuDuration}\n'
-      f'NumberOfJobs: {numJobs}'
+      f'NumberOfJobs: {numJobs}\n'
     )
     return output
 
@@ -195,12 +195,13 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     outFile = dirq.add(outputMessage)
     end = timer()
     print(f'Processed {len(endtime)} records in {end - start} s, writing output to {config.output_path}/{outFile}:')
-    print('--------------------------------')
-    print(outputMessage)
-    print('--------------------------------')
+    print('--------------------------------\n' + outputMessage + '--------------------------------\n')
+#    print(outputMessage)
+#    print('--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
+    print(__file__ + ' starting up')
     cfg = KAPELConfig(envFile)
 
     periods = getTimePeriods(cfg.publishing_mode, startTime=cfg.query_start, endTime=cfg.query_end)
