@@ -55,7 +55,7 @@ class QueryLogic:
 
 def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
     output = (
-        f'APEL-summary-job-message: v0.3\n'
+        f'APEL-summary-job-message: v0.2\n'
         f'Site: {config.site_name}\n'
         f'Month: {month}\n'
         f'Year: {year}\n'
@@ -69,6 +69,7 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
         f'WallDuration: {wallDuration}\n'
         f'CpuDuration: {cpuDuration}\n'
         f'NumberOfJobs: {numJobs}\n'
+        f'%%\n'
     )
     return output
 
