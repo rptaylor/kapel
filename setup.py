@@ -5,7 +5,7 @@ from os import environ
 
 setup(
     name='kapel',
-    version='0.2',
+    version='0.3',
     packages = ['kapel'],
     install_requires=[
         'environs',			# for handling configuration
