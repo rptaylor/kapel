@@ -7,7 +7,7 @@ setup(
     name='kapel',
     version='0.4',
 #    packages=['kapel'],
-    packages=find_packages()
+    packages=find_packages(),
     install_requires=[
         'environs',			# for handling configuration
         'dirq',				# for sending messages
