@@ -13,7 +13,7 @@ import dateutil.relativedelta
 import datetime
 from dateutil.rrule import rrule, MONTHLY
 
-from kapelConfig import kapelConfig
+from kapel import kapelConfig
 from prometheus_api_client import PrometheusConnect
 from dirq.QueueSimple import QueueSimple
 from timeit import default_timer as timer
