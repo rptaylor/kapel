@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Configuration module for KAPEL
 
 from environs import Env
