@@ -7,6 +7,10 @@ environ['PIP_NO_WARN_SCRIPT_LOCATION'] = "0"
 
 setup(name='kapel',
 #      version='0.1',
-      packages = find_packages(),
-      install_requires=['environs', 'dirq', 'prometheus-api-client']
-      )
+    packages = find_packages(),
+    install_requires=[
+        'environs',			# for handling configuration
+        'dirq',				# for sending messages
+        'prometheus-api-client'		# for querying Prometheus
+    ]
+)
