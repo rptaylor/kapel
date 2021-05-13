@@ -13,7 +13,7 @@ import dateutil.relativedelta
 import datetime
 from dateutil.rrule import rrule, MONTHLY
 
-from KAPELConfig import KAPELConfig
+from kapelConfig import kapelConfig
 from prometheus_api_client import PrometheusConnect
 from dirq.QueueSimple import QueueSimple
 from timeit import default_timer as timer
@@ -139,7 +139,7 @@ def rearrange(x):
         yield item['metric']['exported_pod'], float(item['value'][1])
 
 # process a time period (do prom query, process data, write output)
-# takes a KAPELConfig object and one element of output from getTimePeriods
+# takes a kapelConfig object and one element of output from getTimePeriods
 def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
     print(f'Processing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')

@@ -6,7 +6,7 @@ from environs import Env
 
 # Read config settings from environment variables (and a named env file in CWD if specified),
 # do input validation, and return a config object. Note, if a '.env' file exists in CWD it will be used by default.
-class KAPELConfig:
+class kapelConfig:
     def __init__(self, envFile=None):
         env = Env()
         # Read a .env file if one is specified, otherwise only environment variables will be used.
