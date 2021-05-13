@@ -6,7 +6,7 @@ from os import environ
 setup(
     name='kapel',
     version='0.1',
-#    packages = find_packages(),
+    packages = 'kapel',
     install_requires=[
         'environs',			# for handling configuration
         'dirq',				# for sending messages
