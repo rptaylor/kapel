@@ -69,6 +69,8 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
         f'WallDuration: {wallDuration}\n'
         f'CpuDuration: {cpuDuration}\n'
         f'NumberOfJobs: {numJobs}\n'
+        f'Processors: {config.processors}\n'
+        f'NodeCount: {config.nodecount}\n'
         f'%%\n'
     )
     return output
