@@ -61,3 +61,8 @@ class KAPELConfig:
         # infrastructure info
         self.infrastructure_type = env.str("INFRASTRUCTURE_TYPE", "grid")
         self.infrastructure_description = env.str("INFRASTRUCTURE_DESCRIPTION", "APEL-KUBERNETES")
+
+        # optionally define number of nodes and processors. Should not be necessary to
+        # set a default of 0 here but see https://github.com/apel/apel/issues/241
+        self.nodecount = env.int("NODECOUNT", 0)
+        self.processors = env.int("PROCESSORS", 0)
