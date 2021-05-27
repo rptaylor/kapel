@@ -174,6 +174,11 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     # corresponding to jobs that have started but not finished yet. We only want the (completed) jobs for which all values are available.
     assert len(endtime) == min(resultLengths), "endtime should be the shortest list"
 
+    # avoid sending empty records
+    if len(endtime) == 0:
+      print('No records to process.')
+      return
+
     summary_cputime, summary_walltime = 0, 0
 
     #code.interact(local=locals())
