@@ -182,6 +182,7 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     summary_cputime = 0
     start = timer()
     for key in endtime:
+        assert endtime[key] > starttime[key], "job end time is before start time"
         # double check cputime calc of this job
         delta = abs(cputime[key] - (endtime[key] - starttime[key])*cores[key])
         assert delta < 0.001, "cputime calculation is inaccurate"
