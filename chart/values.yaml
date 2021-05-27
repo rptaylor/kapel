@@ -22,6 +22,8 @@ processor:
   config: |
     SITE_NAME: "EXAMPLE-T2"
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
+  # name of git branch to use
+  deploy_branch: "prod"
 
 ssmsend:
   resources:

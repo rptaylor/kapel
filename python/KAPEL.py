@@ -179,24 +179,23 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
       print('No records to process.')
       return
 
-    summary_cputime, summary_walltime = 0, 0
-
-    #code.interact(local=locals())
-
+    summary_cputime = 0
     start = timer()
     for key in endtime:
+        assert endtime[key] > starttime[key], "job end time is before start time"
         # double check cputime calc of this job
         delta = abs(cputime[key] - (endtime[key] - starttime[key])*cores[key])
         assert delta < 0.001, "cputime calculation is inaccurate"
-        # make sure walltime is positive
-        walltime = endtime[key] - starttime[key]
-        assert walltime > 0, "job end time is before start time"
-        # sum up cputime and walltime over all jobs
         summary_cputime += cputime[key]
-        summary_walltime += walltime
 
+    # CPU time as calculated here means (# cores * job duration), which apparently corresponds to the concept of wall time in APEL accounting.
+    # It is not clear what CPU time means in APEL; could be the actual CPU usage % integrated over the job (# cores * job duration * usage) but this does not seem to be documented clearly.
+    # Some batch systems do not actually measure this so it is not reported consistently or accurately. 
+    # Some sites have CPU efficiency (presumably defined as CPU time / wall time) time that is up to ~ 500% of the walltime, or always fixed at 100%.
+    # In Kubernetes, the actual CPU usage % is tracked by metrics server (not KSM), which is not meant to be used for monitoring or accounting purposes and is not scraped by Prometheus.
+    # So just use walltime = cputime
     summary_cputime = round(summary_cputime)
-    summary_walltime = round(summary_walltime)
+    summary_walltime = summary_cputime
 
     print(f'total cputime: {summary_cputime}, total walltime: {summary_walltime}')
     # Write output to the message queue on local filesystem
