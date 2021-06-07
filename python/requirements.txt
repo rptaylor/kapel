@@ -1,9 +1,0 @@
-# Useful for handling configuration
-environs
-# Useful for adding messages to outgoing queue
-dirq
-# For querying Prometheus
-prometheus-api-client
-# For Prometheus API queries - not needed anymore if we use API lib instead
-#requests
-
