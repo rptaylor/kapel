@@ -11,4 +11,4 @@ APEL accounting for Kubernetes.
 - ssmsend container built using the provided Containerfile
 
 ## Helm chart installation
-See https://rptaylor.github.io/kapel/
+The kapel Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
