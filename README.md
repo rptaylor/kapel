@@ -9,3 +9,6 @@ APEL accounting for Kubernetes.
     persisted for a sufficient period of time.
 - X509 host certificate and key for publishing APEL records with ssmsend
 - ssmsend container built using the provided Containerfile
+
+## Helm chart installation
+See https://rptaylor.github.io/kapel/
