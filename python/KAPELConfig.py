@@ -26,7 +26,7 @@ class KAPELConfig:
         # that QUERY_START is precisely the beginning of a month in order to produce a complete summary record for that month which will take precedence over
         # any other records containing fewer jobs that may have already been published. The same applies for QUERY_END
         # matching the end of the month (unless it is the current month at the time of publishing, in which case a subsequent run in auto mode will eventually
-        # complete the records for this month).  So QUERY_START and QUERY_END should look like e.g. '2021-02-01T00:00:00+00:00'
+        # complete the records for this month).  So QUERY_START (and possibly QUERY_END) should look like e.g. '2021-02-01T00:00:00+00:00'
         if self.publishing_mode == "gap":
             self.query_start = env.datetime("QUERY_START")
             self.query_end = env.datetime("QUERY_END")
@@ -39,7 +39,7 @@ class KAPELConfig:
         # Format: https://prometheus.io/docs/prometheus/latest/querying/basics/#time-durations
         self.query_timeout = env.str("QUERY_TIMEOUT", "1800s")
 
-        # Where to write the APEL message output. /srv/kapel by default
+        # Where to write the APEL message output.
         self.output_path = env.path("OUTPUT_PATH", "/srv/kapel")
 
         ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat

@@ -9,14 +9,14 @@
 # Requires python >= 3.6 for new f-strings
 
 import argparse
-import dateutil.relativedelta
 import datetime
+from timeit import default_timer as timer
+import dateutil.relativedelta
 from dateutil.rrule import rrule, MONTHLY
 
 from KAPELConfig import KAPELConfig
 from prometheus_api_client import PrometheusConnect
 from dirq.QueueSimple import QueueSimple
-from timeit import default_timer as timer
 
 # for debugging
 #import code
@@ -75,9 +75,21 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
     )
     return output
 
+def syncMessage(config, year, month, numJobs):
+    output = (
+        f'APEL-sync-message: v0.1\n'
+        f'Site: {config.site_name}\n'
+        f'SubmitHost: {config.submit_host}\n'
+        f'NumberOfJobs: {numJobs}\n'
+        f'Month: {month}\n'
+        f'Year: {year}\n'
+        f'%%\n'
+    )
+    return output
+
 # return a list, each item of which is a dict representing a time period, in the form of
 # an instant (end of the period) and a number of seconds to go back from then to reach the start of the period.
-# Auto mode: there will be 2 dicts in the list, one for this month and one for last month.
+# Auto mode: there will be 2 dicts in the list, one for this month so far and one for all of last month.
 # Gap mode: there will be a dict for each month in the gap period, and start and end are required.
 def getTimePeriods(mode, startTime=None, endTime=None):
     if mode == 'auto':
@@ -176,8 +188,8 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
     # avoid sending empty records
     if len(endtime) == 0:
-      print('No records to process.')
-      return
+        print('No records to process.')
+        return
 
     summary_cputime = 0
     start = timer()
@@ -201,11 +213,16 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    outputMessage = summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime))
-    outFile = dirq.add(outputMessage)
+    summaryOutput = summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime))
+    summaryOutFile = dirq.add(summaryOutput)
+    syncOutput = syncMessage(config, year=iYear, month=iMonth, numJobs=len(endtime))
+    syncOutFile = dirq.add(syncOutput)
     end = timer()
-    print(f'Processed {len(endtime)} records in {end - start} s, writing output to {config.output_path}/{outFile}:')
-    print('--------------------------------\n' + outputMessage + '--------------------------------')
+    print(f'Processed {len(endtime)} records in {end - start} s.')
+    print(f'Writing summary record to {config.output_path}/{summaryOutFile}:')
+    print('--------------------------------\n' + summaryOutput + '--------------------------------')
+    print(f'Writing sync record to {config.output_path}/{syncOutFile}:')
+    print('--------------------------------\n' + syncOutput + '--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
