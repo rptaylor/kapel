@@ -9,14 +9,14 @@
 # Requires python >= 3.6 for new f-strings
 
 import argparse
-import dateutil.relativedelta
 import datetime
+from timeit import default_timer as timer
+import dateutil.relativedelta
 from dateutil.rrule import rrule, MONTHLY
 
 from KAPELConfig import KAPELConfig
 from prometheus_api_client import PrometheusConnect
 from dirq.QueueSimple import QueueSimple
-from timeit import default_timer as timer
 
 # for debugging
 #import code
@@ -188,8 +188,8 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
     # avoid sending empty records
     if len(endtime) == 0:
-      print('No records to process.')
-      return
+        print('No records to process.')
+        return
 
     summary_cputime = 0
     start = timer()
