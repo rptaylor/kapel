@@ -1,5 +1,6 @@
 cronjob:
   schedule: "@daily"
+  priorityClassName: ""
 
 # If true, /cvmfs/grid.cern.ch/etc/grid-security/certificates/ will be mounted as a hostPath volume.
 # If false, you will need to set up an alternative way of providing the ca-policy-* packages and CRLs in the ssmsend container.
