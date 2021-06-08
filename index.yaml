@@ -3,7 +3,17 @@ entries:
   kapel:
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2021-06-07T16:03:51.802706768-07:00"
+    created: "2021-06-08T14:35:52.893491321-07:00"
+    description: APEL accounting for Kubernetes
+    digest: 8e6df4574365c57c7687c601aab6898d0675739ccdd208cd62d5e5d8c542b33a
+    name: kapel
+    type: application
+    urls:
+    - https://rptaylor.github.io/kapel/kapel-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: 3.2.1
+    created: "2021-06-08T14:35:52.893075847-07:00"
     description: APEL accounting for Kubernetes
     digest: f8d3ca8d2ab3d1aaa3a8515606ec4f3ecc1f647017d43dfc51abcc168ce1eb00
     name: kapel
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://rptaylor.github.io/kapel/kapel-0.1.11.tgz
     version: 0.1.11
-generated: "2021-06-07T16:03:51.8017699-07:00"
+generated: "2021-06-08T14:35:52.892449778-07:00"
