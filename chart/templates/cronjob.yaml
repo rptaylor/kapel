@@ -60,6 +60,9 @@ spec:
                 # ignore pip warning
                 - name: PIP_NO_WARN_SCRIPT_LOCATION
                   value: "0"
+                # to see log output immediately
+                - name: PYTHONUNBUFFERED
+                  value: "TRUE"
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-processor-config
