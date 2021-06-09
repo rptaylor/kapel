@@ -171,10 +171,13 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
         # 'metric': a dict of one or more key-value pairs of labels, one of which is the pod name ('exported_pod').
         # 'value': a list in which the 0th element is the timestamp of the value, and 1th element is the actual value we're interested in.
         print(f'Executing {queryName} query: {queryString}')
+        t1 = timer()
         rawResults[queryName] = prom.custom_query(query=queryString, params=prom_connect_params)
+        t2 = timer()
         results[queryName] = dict(rearrange(rawResults[queryName]))
         resultLengths.append(len(results[queryName]))
-        print(f'Got {len(rawResults[queryName])} results from query, processed into {len(results[queryName])} items.')
+        t3 = timer()
+        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[queryName])} items from {len(rawResults[queryName])} results.')
         del rawResults[queryName]
 
     cputime = results['cputime']
