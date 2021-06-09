@@ -17,6 +17,9 @@ spec:
       backoffLimit: 2
       template:
         spec:
+          {{- if .Values.cronjob.priorityClassName }}
+          priorityClassName: {{ .Values.cronjob.priorityClassName }}
+          {{- end }}
           # Allow up to 4 hours for pod completion
           activeDeadlineSeconds: 14400
           # If a container fails, fail the pod (job controller will make a fresh new pod)
