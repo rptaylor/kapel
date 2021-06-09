@@ -221,7 +221,7 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     syncOutput = syncMessage(config, year=iYear, month=iMonth, numJobs=len(endtime))
     syncOutFile = dirq.add(syncOutput)
     end = timer()
-    print(f'Processed {len(endtime)} records in {end - start} s.')
+    print(f'Analyzed {len(endtime)} records in {end - start} s.')
     print(f'Writing summary record to {config.output_path}/{summaryOutFile}:')
     print('--------------------------------\n' + summaryOutput + '--------------------------------')
     print(f'Writing sync record to {config.output_path}/{syncOutFile}:')
