@@ -57,9 +57,12 @@ spec:
                 # for pip installation
                 - name: HOME
                   value: "/tmp/home"
-                # ignore pip warning
+                # ignore pip warnings
                 - name: PIP_NO_WARN_SCRIPT_LOCATION
                   value: "0"
+                # avoid wasting time on network connection for unnecessary version check warning
+                - name: PIP_DISABLE_PIP_VERSION_CHECK
+                  value: "1"
                 # to see log output immediately
                 - name: PYTHONUNBUFFERED
                   value: "TRUE"
