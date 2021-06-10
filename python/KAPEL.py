@@ -195,7 +195,7 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
         return
 
     sum_cputime = 0
-    start = timer()
+    t4 = timer()
     for key in endtime:
         assert endtime[key] > starttime[key], "job end time is before start time"
         # double check cputime calc of this job
@@ -220,8 +220,8 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
     summary_file = dirq.add(summary_output)
     sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
     sync_file = dirq.add(sync_output)
-    end = timer()
-    print(f'Analyzed {len(endtime)} records in {end - start} s.')
+    t5 = timer()
+    print(f'Analyzed {len(endtime)} records in {t5 - t4} s.')
     print(f'Writing summary record to {config.output_path}/{summary_file}:')
     print('--------------------------------\n' + summary_output + '--------------------------------')
     print(f'Writing sync record to {config.output_path}/{sync_file}:')
