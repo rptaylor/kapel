@@ -166,21 +166,21 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     prom = PrometheusConnect(url=config.prometheus_server, disable_ssl=True)
     prom_connect_params = {'time': iInstant, 'timeout': config.query_timeout}
 
-    rawResults, results, resultLengths = {}, {}, []
-    # iterate over each query (cputime, starttime, endtime, cores) producing rawResults['cputime'] etc.
-    for queryName, queryString in vars(queries).items():
-        # Each of these rawResults is a list of dicts. Each dict in the list represents an individual data point, and contains:
+    raw_results, results, result_lengths = {}, {}, []
+    # iterate over each query (cputime, starttime, endtime, cores) producing raw_results['cputime'] etc.
+    for query_name, query_string in vars(queries).items():
+        # Each of these raw_results is a list of dicts. Each dict in the list represents an individual data point, and contains:
         # 'metric': a dict of one or more key-value pairs of labels, one of which is the pod name ('exported_pod').
         # 'value': a list in which the 0th element is the timestamp of the value, and 1th element is the actual value we're interested in.
-        print(f'Executing {queryName} query: {queryString}')
+        print(f'Executing {query_name} query: {query_string}')
         t1 = timer()
-        rawResults[queryName] = prom.custom_query(query=queryString, params=prom_connect_params)
+        raw_results[query_name] = prom.custom_query(query=query_string, params=prom_connect_params)
         t2 = timer()
-        results[queryName] = dict(rearrange(rawResults[queryName]))
-        resultLengths.append(len(results[queryName]))
+        results[query_name] = dict(rearrange(raw_results[query_name]))
+        result_lengths.append(len(results[query_name]))
         t3 = timer()
-        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[queryName])} items from {len(rawResults[queryName])} results.')
-        del rawResults[queryName]
+        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[query_name])} items from {len(raw_results[query_name])} results.')
+        del raw_results[query_name]
 
     cputime = results['cputime']
     endtime = results['endtime']
@@ -189,7 +189,7 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
     # Confirm the assumption that cputime (and endtime) should have the fewest entries, while starttime and cores may have additional ones
     # corresponding to jobs that have started but not finished yet. We only want the (completed) jobs for which all values are available.
-    assert len(endtime) == min(resultLengths), "endtime should be the shortest list"
+    assert len(endtime) == min(result_lengths), "endtime should be the shortest list"
 
     # avoid sending empty records
     if len(endtime) == 0:
