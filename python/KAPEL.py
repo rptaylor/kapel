@@ -53,7 +53,7 @@ class QueryLogic:
         self.starttime = f'max_over_time(kube_pod_start_time[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{queryRange}])'
 
-def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
+def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs, firstEnd, lastEnd):
     output = (
         f'APEL-summary-job-message: v0.2\n'
         f'Site: {config.site_name}\n'
@@ -71,6 +71,8 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
         f'NumberOfJobs: {numJobs}\n'
         f'Processors: {config.processors}\n'
         f'NodeCount: {config.nodecount}\n'
+        f'EarliestEndTime: {firstEnd}\n'
+        f'LatestEndTime: {lastEnd}\n'
         f'%%\n'
     )
     return output
@@ -194,14 +196,14 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
         print('No records to process.')
         return
 
-    summary_cputime = 0
+    sum_cputime = 0
     start = timer()
     for key in endtime:
         assert endtime[key] > starttime[key], "job end time is before start time"
         # double check cputime calc of this job
         delta = abs(cputime[key] - (endtime[key] - starttime[key])*cores[key])
         assert delta < 0.001, "cputime calculation is inaccurate"
-        summary_cputime += cputime[key]
+        sum_cputime += cputime[key]
 
     # CPU time as calculated here means (# cores * job duration), which apparently corresponds to the concept of wall time in APEL accounting.
     # It is not clear what CPU time means in APEL; could be the actual CPU usage % integrated over the job (# cores * job duration * usage) but this does not seem to be documented clearly.
@@ -209,23 +211,23 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     # Some sites have CPU efficiency (presumably defined as CPU time / wall time) time that is up to ~ 500% of the walltime, or always fixed at 100%.
     # In Kubernetes, the actual CPU usage % is tracked by metrics server (not KSM), which is not meant to be used for monitoring or accounting purposes and is not scraped by Prometheus.
     # So just use walltime = cputime
-    summary_cputime = round(summary_cputime)
-    summary_walltime = summary_cputime
+    sum_cputime = round(sum_cputime)
+    sum_walltime = sum_cputime
 
-    print(f'total cputime: {summary_cputime}, total walltime: {summary_walltime}')
+    print(f'total cputime: {sum_cputime}, total walltime: {sum_walltime}')
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    summaryOutput = summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime))
-    summaryOutFile = dirq.add(summaryOutput)
-    syncOutput = syncMessage(config, year=iYear, month=iMonth, numJobs=len(endtime))
-    syncOutFile = dirq.add(syncOutput)
+    summary_output = summaryMessage(config, year=iYear, month=iMonth, wallDuration=sum_walltime, cpuDuration=sum_cputime, numJobs=len(endtime), firstEnd=min(endtime), lastEnd=max(endtime))
+    summary_file = dirq.add(summary_output)
+    sync_output = syncMessage(config, year=iYear, month=iMonth, numJobs=len(endtime))
+    sync_file = dirq.add(sync_output)
     end = timer()
     print(f'Analyzed {len(endtime)} records in {end - start} s.')
-    print(f'Writing summary record to {config.output_path}/{summaryOutFile}:')
-    print('--------------------------------\n' + summaryOutput + '--------------------------------')
-    print(f'Writing sync record to {config.output_path}/{syncOutFile}:')
-    print('--------------------------------\n' + syncOutput + '--------------------------------')
+    print(f'Writing summary record to {config.output_path}/{summary_file}:')
+    print('--------------------------------\n' + summary_output + '--------------------------------')
+    print(f'Writing sync record to {config.output_path}/{sync_file}:')
+    print('--------------------------------\n' + sync_output + '--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
