@@ -149,6 +149,7 @@ def get_gap_time_periods(start, end):
 # NB: this overwrites duplicate results if we get any from the prom query!
 def rearrange(x):
     for item in x:
+        # this produces each of the (key, value) tuples in the list
         yield item['metric']['exported_pod'], float(item['value'][1])
 
 # process a time period (do prom query, process data, write output)
@@ -215,7 +216,7 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    summary_output = summary_message(config, year=iYear, month=iMonth, wall_time=sum_walltime, cpu_time=sum_cputime, n_jobs=len(endtime), first_end=min(endtime), last_end=max(endtime))
+    summary_output = summary_message(config, year=iYear, month=iMonth, wall_time=sum_walltime, cpu_time=sum_cputime, n_jobs=len(endtime), first_end=min(endtime.values()), last_end=max(endtime.values()))
     summary_file = dirq.add(summary_output)
     sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
     sync_file = dirq.add(sync_output)
