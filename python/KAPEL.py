@@ -53,7 +53,7 @@ class QueryLogic:
         self.starttime = f'max_over_time(kube_pod_start_time[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{queryRange}])'
 
-def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs, firstEnd, lastEnd):
+def summary_message(config, year, month, wall_time, cpu_time, n_jobs, first_end, last_end):
     output = (
         f'APEL-summary-job-message: v0.2\n'
         f'Site: {config.site_name}\n'
@@ -66,23 +66,23 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs, firs
         # si2k = HS06 * 250
         f'ServiceLevelType: si2k\n'
         f'ServiceLevel: {config.benchmark_value * 250}\n'
-        f'WallDuration: {wallDuration}\n'
-        f'CpuDuration: {cpuDuration}\n'
-        f'NumberOfJobs: {numJobs}\n'
+        f'WallDuration: {wall_time}\n'
+        f'CpuDuration: {cpu_time}\n'
+        f'NumberOfJobs: {n_jobs}\n'
         f'Processors: {config.processors}\n'
         f'NodeCount: {config.nodecount}\n'
-        f'EarliestEndTime: {firstEnd}\n'
-        f'LatestEndTime: {lastEnd}\n'
+        f'EarliestEndTime: {first_end}\n'
+        f'LatestEndTime: {last_end}\n'
         f'%%\n'
     )
     return output
 
-def syncMessage(config, year, month, numJobs):
+def sync_message(config, year, month, n_jobs):
     output = (
         f'APEL-sync-message: v0.1\n'
         f'Site: {config.site_name}\n'
         f'SubmitHost: {config.submit_host}\n'
-        f'NumberOfJobs: {numJobs}\n'
+        f'NumberOfJobs: {n_jobs}\n'
         f'Month: {month}\n'
         f'Year: {year}\n'
         f'%%\n'
@@ -93,29 +93,29 @@ def syncMessage(config, year, month, numJobs):
 # an instant (end of the period) and a number of seconds to go back from then to reach the start of the period.
 # Auto mode: there will be 2 dicts in the list, one for this month so far and one for all of last month.
 # Gap mode: there will be a dict for each month in the gap period, and start and end are required.
-def getTimePeriods(mode, startTime=None, endTime=None):
+def get_time_periods(mode, start_time=None, end_time=None):
     if mode == 'auto':
         # get current time of script execution, in ISO8601 and UTC, ignoring microseconds.
         # This will be the singular reference time with respect to which we determine other times.
-        runTime = datetime.datetime.now(tz=datetime.timezone.utc).replace(microsecond=0)
-        startOfThisMonth = runTime.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        startOfLastMonth = startOfThisMonth + dateutil.relativedelta.relativedelta(months=-1)
-        return getGapTimePeriods(start=startOfLastMonth, end=runTime)
+        run_time = datetime.datetime.now(tz=datetime.timezone.utc).replace(microsecond=0)
+        start_of_this_month = run_time.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        start_of_last_month = start_of_this_month + dateutil.relativedelta.relativedelta(months=-1)
+        return get_gap_time_periods(start=start_of_last_month, end=run_time)
     elif mode == 'gap':
-        return getGapTimePeriods(start=startTime, end=endTime)
+        return get_gap_time_periods(start=start_time, end=end_time)
     else:
         raise ValueError('Invalid mode')
 
-def getGapTimePeriods(start, end):
+def get_gap_time_periods(start, end):
     assert isinstance(start, datetime.datetime), "start is not type datetime.datetime"
     assert isinstance(end, datetime.datetime), "end is not type datetime.datetime"
     assert start < end, "start is not after end"
 
     # To avoid invalid dates (e.g. Feb 30) use the very beginning of the month to determine intervals
-    intervalStart = start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    assert intervalStart <= start
+    interval_start = start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    assert interval_start <= start
     # https://dateutil.readthedocs.io/en/stable/rrule.html
-    intervals = list(rrule(freq=MONTHLY, dtstart=intervalStart, until=end))
+    intervals = list(rrule(freq=MONTHLY, dtstart=interval_start, until=end))
     assert len(intervals) >= 1
 
     # Replace the 1st element of the list (which has day artificially set to 1) with the real start
@@ -132,18 +132,15 @@ def getGapTimePeriods(start, end):
         print(i.isoformat())
 
     periods = []
-
     for i, time in enumerate(intervals):
         # process all except the last item, since last one has already been used as the end for the previous item
         if i < len(intervals) - 1:
-            thisMonth = {
+            periods.append({
                 'year': time.year,
                 'month': time.month,
                 'queryInstant': intervals[i + 1].isoformat(),
                 'queryRangeSeconds': int((intervals[i + 1] - time).total_seconds())
-            }
-            periods.append(thisMonth)
-
+            })
     return periods
 
 # Take a list of dicts from the prom query and construct a random-accessible dict
@@ -155,8 +152,8 @@ def rearrange(x):
         yield item['metric']['exported_pod'], float(item['value'][1])
 
 # process a time period (do prom query, process data, write output)
-# takes a KAPELConfig object and one element of output from getTimePeriods
-def processPeriod(config, iYear, iMonth, iInstant, iRange):
+# takes a KAPELConfig object and one element of output from get_time_periods
+def process_period(config, iYear, iMonth, iInstant, iRange):
 
     print(f'Processing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
     queries = QueryLogic(queryRange=iRange)
@@ -218,9 +215,9 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    summary_output = summaryMessage(config, year=iYear, month=iMonth, wallDuration=sum_walltime, cpuDuration=sum_cputime, numJobs=len(endtime), firstEnd=min(endtime), lastEnd=max(endtime))
+    summary_output = summary_message(config, year=iYear, month=iMonth, wall_time=sum_walltime, cpu_time=sum_cputime, n_jobs=len(endtime), first_end=min(endtime), last_end=max(endtime))
     summary_file = dirq.add(summary_output)
-    sync_output = syncMessage(config, year=iYear, month=iMonth, numJobs=len(endtime))
+    sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
     sync_file = dirq.add(sync_output)
     end = timer()
     print(f'Analyzed {len(endtime)} records in {end - start} s.')
@@ -234,13 +231,13 @@ def main(envFile):
     print('Starting KAPEL processor: ' + __file__)
     cfg = KAPELConfig(envFile)
 
-    periods = getTimePeriods(cfg.publishing_mode, startTime=cfg.query_start, endTime=cfg.query_end)
+    periods = get_time_periods(cfg.publishing_mode, start_time=cfg.query_start, end_time=cfg.query_end)
     print('time periods:')
     print(periods)
 
     for i in periods:
         r = str(i['queryRangeSeconds']) + 's'
-        processPeriod(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
+        process_period(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")
