@@ -217,10 +217,10 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
     summary_output = summary_message(config, year=iYear, month=iMonth, wall_time=sum_walltime, cpu_time=sum_cputime, n_jobs=len(endtime), first_end=min(endtime.values()), last_end=max(endtime.values()))
-    summary_file = dirq.add(summary_output)
     sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
-    sync_file = dirq.add(sync_output)
     t5 = timer()
+    summary_file = dirq.add(summary_output)
+    sync_file = dirq.add(sync_output)
     print(f'Analyzed {len(endtime)} records in {t5 - t4} s.')
     print(f'Writing summary record to {config.output_path}/{summary_file}:')
     print('--------------------------------\n' + summary_output + '--------------------------------')
