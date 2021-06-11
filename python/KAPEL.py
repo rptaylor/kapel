@@ -53,7 +53,7 @@ class QueryLogic:
         self.starttime = f'max_over_time(kube_pod_start_time[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{queryRange}])'
 
-def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
+def summary_message(config, year, month, wall_time, cpu_time, n_jobs, first_end, last_end):
     output = (
         f'APEL-summary-job-message: v0.2\n'
         f'Site: {config.site_name}\n'
@@ -66,21 +66,23 @@ def summaryMessage(config, year, month, wallDuration, cpuDuration, numJobs):
         # si2k = HS06 * 250
         f'ServiceLevelType: si2k\n'
         f'ServiceLevel: {config.benchmark_value * 250}\n'
-        f'WallDuration: {wallDuration}\n'
-        f'CpuDuration: {cpuDuration}\n'
-        f'NumberOfJobs: {numJobs}\n'
+        f'WallDuration: {wall_time}\n'
+        f'CpuDuration: {cpu_time}\n'
+        f'NumberOfJobs: {n_jobs}\n'
         f'Processors: {config.processors}\n'
         f'NodeCount: {config.nodecount}\n'
+        f'EarliestEndTime: {first_end}\n'
+        f'LatestEndTime: {last_end}\n'
         f'%%\n'
     )
     return output
 
-def syncMessage(config, year, month, numJobs):
+def sync_message(config, year, month, n_jobs):
     output = (
         f'APEL-sync-message: v0.1\n'
         f'Site: {config.site_name}\n'
         f'SubmitHost: {config.submit_host}\n'
-        f'NumberOfJobs: {numJobs}\n'
+        f'NumberOfJobs: {n_jobs}\n'
         f'Month: {month}\n'
         f'Year: {year}\n'
         f'%%\n'
@@ -91,29 +93,29 @@ def syncMessage(config, year, month, numJobs):
 # an instant (end of the period) and a number of seconds to go back from then to reach the start of the period.
 # Auto mode: there will be 2 dicts in the list, one for this month so far and one for all of last month.
 # Gap mode: there will be a dict for each month in the gap period, and start and end are required.
-def getTimePeriods(mode, startTime=None, endTime=None):
+def get_time_periods(mode, start_time=None, end_time=None):
     if mode == 'auto':
         # get current time of script execution, in ISO8601 and UTC, ignoring microseconds.
         # This will be the singular reference time with respect to which we determine other times.
-        runTime = datetime.datetime.now(tz=datetime.timezone.utc).replace(microsecond=0)
-        startOfThisMonth = runTime.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        startOfLastMonth = startOfThisMonth + dateutil.relativedelta.relativedelta(months=-1)
-        return getGapTimePeriods(start=startOfLastMonth, end=runTime)
+        run_time = datetime.datetime.now(tz=datetime.timezone.utc).replace(microsecond=0)
+        start_of_this_month = run_time.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        start_of_last_month = start_of_this_month + dateutil.relativedelta.relativedelta(months=-1)
+        return get_gap_time_periods(start=start_of_last_month, end=run_time)
     elif mode == 'gap':
-        return getGapTimePeriods(start=startTime, end=endTime)
+        return get_gap_time_periods(start=start_time, end=end_time)
     else:
         raise ValueError('Invalid mode')
 
-def getGapTimePeriods(start, end):
+def get_gap_time_periods(start, end):
     assert isinstance(start, datetime.datetime), "start is not type datetime.datetime"
     assert isinstance(end, datetime.datetime), "end is not type datetime.datetime"
     assert start < end, "start is not after end"
 
     # To avoid invalid dates (e.g. Feb 30) use the very beginning of the month to determine intervals
-    intervalStart = start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    assert intervalStart <= start
+    interval_start = start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    assert interval_start <= start
     # https://dateutil.readthedocs.io/en/stable/rrule.html
-    intervals = list(rrule(freq=MONTHLY, dtstart=intervalStart, until=end))
+    intervals = list(rrule(freq=MONTHLY, dtstart=interval_start, until=end))
     assert len(intervals) >= 1
 
     # Replace the 1st element of the list (which has day artificially set to 1) with the real start
@@ -130,18 +132,15 @@ def getGapTimePeriods(start, end):
         print(i.isoformat())
 
     periods = []
-
     for i, time in enumerate(intervals):
         # process all except the last item, since last one has already been used as the end for the previous item
         if i < len(intervals) - 1:
-            thisMonth = {
+            periods.append({
                 'year': time.year,
                 'month': time.month,
                 'queryInstant': intervals[i + 1].isoformat(),
                 'queryRangeSeconds': int((intervals[i + 1] - time).total_seconds())
-            }
-            periods.append(thisMonth)
-
+            })
     return periods
 
 # Take a list of dicts from the prom query and construct a random-accessible dict
@@ -150,11 +149,12 @@ def getGapTimePeriods(start, end):
 # NB: this overwrites duplicate results if we get any from the prom query!
 def rearrange(x):
     for item in x:
+        # this produces each of the (key, value) tuples in the list
         yield item['metric']['exported_pod'], float(item['value'][1])
 
 # process a time period (do prom query, process data, write output)
-# takes a KAPELConfig object and one element of output from getTimePeriods
-def processPeriod(config, iYear, iMonth, iInstant, iRange):
+# takes a KAPELConfig object and one element of output from get_time_periods
+def process_period(config, iYear, iMonth, iInstant, iRange):
 
     print(f'Processing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
     queries = QueryLogic(queryRange=iRange)
@@ -164,21 +164,21 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
     prom = PrometheusConnect(url=config.prometheus_server, disable_ssl=True)
     prom_connect_params = {'time': iInstant, 'timeout': config.query_timeout}
 
-    rawResults, results, resultLengths = {}, {}, []
-    # iterate over each query (cputime, starttime, endtime, cores) producing rawResults['cputime'] etc.
-    for queryName, queryString in vars(queries).items():
-        # Each of these rawResults is a list of dicts. Each dict in the list represents an individual data point, and contains:
+    raw_results, results, result_lengths = {}, {}, []
+    # iterate over each query (cputime, starttime, endtime, cores) producing raw_results['cputime'] etc.
+    for query_name, query_string in vars(queries).items():
+        # Each of these raw_results is a list of dicts. Each dict in the list represents an individual data point, and contains:
         # 'metric': a dict of one or more key-value pairs of labels, one of which is the pod name ('exported_pod').
         # 'value': a list in which the 0th element is the timestamp of the value, and 1th element is the actual value we're interested in.
-        print(f'Executing {queryName} query: {queryString}')
+        print(f'Executing {query_name} query: {query_string}')
         t1 = timer()
-        rawResults[queryName] = prom.custom_query(query=queryString, params=prom_connect_params)
+        raw_results[query_name] = prom.custom_query(query=query_string, params=prom_connect_params)
         t2 = timer()
-        results[queryName] = dict(rearrange(rawResults[queryName]))
-        resultLengths.append(len(results[queryName]))
+        results[query_name] = dict(rearrange(raw_results[query_name]))
+        result_lengths.append(len(results[query_name]))
         t3 = timer()
-        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[queryName])} items from {len(rawResults[queryName])} results.')
-        del rawResults[queryName]
+        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[query_name])} items from {len(raw_results[query_name])} results.')
+        del raw_results[query_name]
 
     cputime = results['cputime']
     endtime = results['endtime']
@@ -187,58 +187,68 @@ def processPeriod(config, iYear, iMonth, iInstant, iRange):
 
     # Confirm the assumption that cputime (and endtime) should have the fewest entries, while starttime and cores may have additional ones
     # corresponding to jobs that have started but not finished yet. We only want the (completed) jobs for which all values are available.
-    assert len(endtime) == min(resultLengths), "endtime should be the shortest list"
+    assert len(endtime) == min(result_lengths), "endtime should be the shortest list"
 
     # avoid sending empty records
     if len(endtime) == 0:
         print('No records to process.')
         return
 
-    summary_cputime = 0
-    start = timer()
+    sum_cputime = 0
+    t4 = timer()
     for key in endtime:
         assert endtime[key] > starttime[key], "job end time is before start time"
         # double check cputime calc of this job
         delta = abs(cputime[key] - (endtime[key] - starttime[key])*cores[key])
         assert delta < 0.001, "cputime calculation is inaccurate"
-        summary_cputime += cputime[key]
+        sum_cputime += cputime[key]
 
     # CPU time as calculated here means (# cores * job duration), which apparently corresponds to the concept of wall time in APEL accounting.
     # It is not clear what CPU time means in APEL; could be the actual CPU usage % integrated over the job (# cores * job duration * usage) but this does not seem to be documented clearly.
-    # Some batch systems do not actually measure this so it is not reported consistently or accurately. 
+    # Some batch systems do not actually measure this so it is not reported consistently or accurately.
     # Some sites have CPU efficiency (presumably defined as CPU time / wall time) time that is up to ~ 500% of the walltime, or always fixed at 100%.
     # In Kubernetes, the actual CPU usage % is tracked by metrics server (not KSM), which is not meant to be used for monitoring or accounting purposes and is not scraped by Prometheus.
     # So just use walltime = cputime
-    summary_cputime = round(summary_cputime)
-    summary_walltime = summary_cputime
+    sum_cputime = round(sum_cputime)
+    sum_walltime = sum_cputime
 
-    print(f'total cputime: {summary_cputime}, total walltime: {summary_walltime}')
+    print(f'total cputime: {sum_cputime}, total walltime: {sum_walltime}')
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    summaryOutput = summaryMessage(config, year=iYear, month=iMonth, wallDuration=summary_walltime, cpuDuration=summary_cputime, numJobs=len(endtime))
-    summaryOutFile = dirq.add(summaryOutput)
-    syncOutput = syncMessage(config, year=iYear, month=iMonth, numJobs=len(endtime))
-    syncOutFile = dirq.add(syncOutput)
-    end = timer()
-    print(f'Analyzed {len(endtime)} records in {end - start} s.')
-    print(f'Writing summary record to {config.output_path}/{summaryOutFile}:')
-    print('--------------------------------\n' + summaryOutput + '--------------------------------')
-    print(f'Writing sync record to {config.output_path}/{syncOutFile}:')
-    print('--------------------------------\n' + syncOutput + '--------------------------------')
+    summary_output = summary_message(
+        config,
+        year=iYear,
+        month=iMonth,
+        wall_time=sum_walltime,
+        cpu_time=sum_cputime,
+        n_jobs=len(endtime),
+        # this seems faster than getting min/max during the dict iteration above
+        first_end=round(min(endtime.values())),
+        last_end=round(max(endtime.values()))
+    )
+    sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
+    t5 = timer()
+    summary_file = dirq.add(summary_output)
+    sync_file = dirq.add(sync_output)
+    print(f'Analyzed {len(endtime)} records in {t5 - t4} s.')
+    print(f'Writing summary record to {config.output_path}/{summary_file}:')
+    print('--------------------------------\n' + summary_output + '--------------------------------')
+    print(f'Writing sync record to {config.output_path}/{sync_file}:')
+    print('--------------------------------\n' + sync_output + '--------------------------------')
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
     print('Starting KAPEL processor: ' + __file__)
     cfg = KAPELConfig(envFile)
 
-    periods = getTimePeriods(cfg.publishing_mode, startTime=cfg.query_start, endTime=cfg.query_end)
+    periods = get_time_periods(cfg.publishing_mode, start_time=cfg.query_start, end_time=cfg.query_end)
     print('time periods:')
     print(periods)
 
     for i in periods:
         r = str(i['queryRangeSeconds']) + 's'
-        processPeriod(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
+        process_period(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")
