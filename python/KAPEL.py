@@ -205,7 +205,7 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
 
     # CPU time as calculated here means (# cores * job duration), which apparently corresponds to the concept of wall time in APEL accounting.
     # It is not clear what CPU time means in APEL; could be the actual CPU usage % integrated over the job (# cores * job duration * usage) but this does not seem to be documented clearly.
-    # Some batch systems do not actually measure this so it is not reported consistently or accurately. 
+    # Some batch systems do not actually measure this so it is not reported consistently or accurately.
     # Some sites have CPU efficiency (presumably defined as CPU time / wall time) time that is up to ~ 500% of the walltime, or always fixed at 100%.
     # In Kubernetes, the actual CPU usage % is tracked by metrics server (not KSM), which is not meant to be used for monitoring or accounting purposes and is not scraped by Prometheus.
     # So just use walltime = cputime
@@ -216,7 +216,17 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
     # Write output to the message queue on local filesystem
     # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
     dirq = QueueSimple(str(config.output_path))
-    summary_output = summary_message(config, year=iYear, month=iMonth, wall_time=sum_walltime, cpu_time=sum_cputime, n_jobs=len(endtime), first_end=min(endtime.values()), last_end=max(endtime.values()))
+    summary_output = summary_message(
+        config,
+        year=iYear,
+        month=iMonth,
+        wall_time=sum_walltime,
+        cpu_time=sum_cputime,
+        n_jobs=len(endtime),
+        # this seems faster than getting min/max during the dict iteration above
+        first_end=min(endtime.values()),
+        last_end=max(endtime.values())
+    )
     sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
     t5 = timer()
     summary_file = dirq.add(summary_output)
