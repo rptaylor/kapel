@@ -224,8 +224,8 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
         cpu_time=sum_cputime,
         n_jobs=len(endtime),
         # this seems faster than getting min/max during the dict iteration above
-        first_end=min(endtime.values()),
-        last_end=max(endtime.values())
+        first_end=round(min(endtime.values())),
+        last_end=round(max(endtime.values()))
     )
     sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
     t5 = timer()
