@@ -155,9 +155,13 @@ def rearrange(x):
 
 # process a time period (do prom query, process data, write output)
 # takes a KAPELConfig object and one element of output from get_time_periods
+# Remember Prometheus queries go backwards: the time instant is the end, go backwards from there.
 def process_period(config, period):
-
-    print(f"Processing year {period['year']}, month {period['month']}, starting at {period['instant'].isoformat()} and going back {period['range_sec']} s.")
+    period_start = period['instant'] + dateutil.relativedelta.relativedelta(seconds=-period['range_sec'])
+    print(
+        f"Processing year {period['year']}, month {period['month']}, "
+        f"querying from {period['instant'].isoformat()} and going back {period['range_sec']} s to {period_start.isoformat()}."
+    )
     queries = QueryLogic(queryRange=(str(period['range_sec']) + 's'))
 
     # SSL generally not used for Prometheus access within a cluster
