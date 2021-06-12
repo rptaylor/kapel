@@ -154,15 +154,15 @@ def rearrange(x):
 
 # process a time period (do prom query, process data, write output)
 # takes a KAPELConfig object and one element of output from get_time_periods
-def process_period(config, iYear, iMonth, iInstant, iRange):
+def process_period(config, period_year, period_month, period_instant, range_seconds):
 
-    print(f'Processing year {iYear}, month {iMonth}, starting at {iInstant} and going back {iRange}.')
-    queries = QueryLogic(queryRange=iRange)
+    print(f'Processing year {period_year}, month {period_month}, starting at {period_instant} and going back {range_seconds}.')
+    queries = QueryLogic(queryRange=range_seconds)
 
     # SSL generally not used for Prometheus access within a cluster
     # Docs on instant query API: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries
     prom = PrometheusConnect(url=config.prometheus_server, disable_ssl=True)
-    prom_connect_params = {'time': iInstant, 'timeout': config.query_timeout}
+    prom_connect_params = {'time': period_instant, 'timeout': config.query_timeout}
 
     raw_results, results, result_lengths = {}, {}, []
     # iterate over each query (cputime, starttime, endtime, cores) producing raw_results['cputime'] etc.
@@ -218,8 +218,8 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
     dirq = QueueSimple(str(config.output_path))
     summary_output = summary_message(
         config,
-        year=iYear,
-        month=iMonth,
+        year=period_year,
+        month=period_month,
         wall_time=sum_walltime,
         cpu_time=sum_cputime,
         n_jobs=len(endtime),
@@ -227,7 +227,7 @@ def process_period(config, iYear, iMonth, iInstant, iRange):
         first_end=round(min(endtime.values())),
         last_end=round(max(endtime.values()))
     )
-    sync_output = sync_message(config, year=iYear, month=iMonth, n_jobs=len(endtime))
+    sync_output = sync_message(config, year=period_year, month=period_month, n_jobs=len(endtime))
     t5 = timer()
     summary_file = dirq.add(summary_output)
     sync_file = dirq.add(sync_output)
@@ -248,7 +248,7 @@ def main(envFile):
 
     for i in periods:
         r = str(i['queryRangeSeconds']) + 's'
-        process_period(config=cfg, iYear=i['year'], iMonth=i['month'], iInstant=i['queryInstant'], iRange=r)
+        process_period(config=cfg, period_year=i['year'], period_month=i['month'], period_instant=i['queryInstant'], range_seconds=r)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")
