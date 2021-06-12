@@ -156,8 +156,8 @@ def rearrange(x):
 # takes a KAPELConfig object and one element of output from get_time_periods
 def process_period(config, period_year, period_month, period_instant, range_seconds):
 
-    print(f'Processing year {period_year}, month {period_month}, starting at {period_instant} and going back {range_seconds}.')
-    queries = QueryLogic(queryRange=range_seconds)
+    print(f'Processing year {period_year}, month {period_month}, starting at {period_instant} and going back {range_seconds} s.')
+    queries = QueryLogic(queryRange=(str(range_seconds) + 's'))
 
     # SSL generally not used for Prometheus access within a cluster
     # Docs on instant query API: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries
@@ -247,8 +247,7 @@ def main(envFile):
     print(periods)
 
     for i in periods:
-        r = str(i['queryRangeSeconds']) + 's'
-        process_period(config=cfg, period_year=i['year'], period_month=i['month'], period_instant=i['queryInstant'], range_seconds=r)
+        process_period(config=cfg, period_year=i['year'], period_month=i['month'], period_instant=i['queryInstant'], range_seconds=i['queryRangeSeconds'])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")
