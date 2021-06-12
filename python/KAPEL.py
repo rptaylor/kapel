@@ -138,9 +138,10 @@ def get_gap_time_periods(start, end):
             periods.append({
                 'year': time.year,
                 'month': time.month,
-                'instant': intervals[i + 1].isoformat(),
+                'instant': intervals[i + 1],
                 'range_sec': int((intervals[i + 1] - time).total_seconds())
             })
+    # return value is list of dicts of (int, int, datetime, int)
     return periods
 
 # Take a list of dicts from the prom query and construct a random-accessible dict
@@ -156,13 +157,13 @@ def rearrange(x):
 # takes a KAPELConfig object and one element of output from get_time_periods
 def process_period(config, period):
 
-    print(f"Processing year {period['year']}, month {period['month']}, starting at {period['instant']} and going back {period['range_sec']} s.")
+    print(f"Processing year {period['year']}, month {period['month']}, starting at {period['instant'].isoformat()} and going back {period['range_sec']} s.")
     queries = QueryLogic(queryRange=(str(period['range_sec']) + 's'))
 
     # SSL generally not used for Prometheus access within a cluster
     # Docs on instant query API: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries
     prom = PrometheusConnect(url=config.prometheus_server, disable_ssl=True)
-    prom_connect_params = {'time': period['instant'], 'timeout': config.query_timeout}
+    prom_connect_params = {'time': period['instant'].isoformat(), 'timeout': config.query_timeout}
 
     raw_results, results, result_lengths = {}, {}, []
     # iterate over each query (cputime, starttime, endtime, cores) producing raw_results['cputime'] etc.
