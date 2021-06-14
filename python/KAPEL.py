@@ -144,9 +144,8 @@ def get_gap_time_periods(start, end):
     # return value is list of dicts of (int, int, datetime, int)
     return periods
 
-# Take a list of dicts from the prom query and construct a random-accessible dict
+# Take a list of dicts from the prom query and construct a random-accessible dict (casting from string to float while we're at it) via generator.
 # (actually a list of tuples, so use dict() on the output) that can be referenced by the 'exported_pod' label as a key.
-# Cast from string to float while we're at it.
 # NB: this overwrites duplicate results if we get any from the prom query!
 def rearrange(x):
     for item in x:
@@ -192,7 +191,12 @@ def process_period(config, period):
 
     # Confirm the assumption that cputime (and endtime) should have the fewest entries, while starttime and cores may have additional ones
     # corresponding to jobs that have started but not finished yet. We only want the (completed) jobs for which all values are available.
+    # Note that jobs which started last month and finished this month will be properly included and accounted in this month.
     assert len(endtime) == min(result_lengths), "endtime should be the shortest list"
+
+    # However, jobs that finished last month may show up in this month's data if they are still present on the cluster this month (in Completed state).
+    # Exclude them by filtering with a lambda (since you can't pass an argument to a function object AFAIK).
+    endtime = dict(filter(lambda x: x[1] >= datetime.datetime.timestamp(period_start), endtime.items()))
 
     # avoid sending empty records
     if len(endtime) == 0:
@@ -208,12 +212,15 @@ def process_period(config, period):
         assert delta < 0.001, "cputime calculation is inaccurate"
         sum_cputime += cputime[key]
 
-    # CPU time as calculated here means (# cores * job duration), which apparently corresponds to the concept of wall time in APEL accounting.
-    # It is not clear what CPU time means in APEL; could be the actual CPU usage % integrated over the job (# cores * job duration * usage) but this does not seem to be documented clearly.
-    # Some batch systems do not actually measure this so it is not reported consistently or accurately.
-    # Some sites have CPU efficiency (presumably defined as CPU time / wall time) time that is up to ~ 500% of the walltime, or always fixed at 100%.
-    # In Kubernetes, the actual CPU usage % is tracked by metrics server (not KSM), which is not meant to be used for monitoring or accounting purposes and is not scraped by Prometheus.
-    # So just use walltime = cputime
+    # CPU time as calculated here means (# cores * job duration), which apparently corresponds to
+    # the concept of wall time in APEL accounting. It is not clear what CPU time means in APEL;
+    # could be the actual CPU usage % integrated over the job (# cores * job duration * usage)
+    # but this does not seem to be documented clearly. Some batch systems do not actually measure
+    # this so it is not reported consistently or accurately. Some sites have CPU efficiency
+    # (presumably defined as CPU time / wall time) time that is up to ~ 500% of the walltime, or
+    # always fixed at 100%. In Kubernetes, the actual CPU usage % is tracked by metrics server
+    # (not KSM), which is not meant to be used for monitoring or accounting purposes and is not
+    # scraped by Prometheus. So just use walltime = cputime
     sum_cputime = round(sum_cputime)
     sum_walltime = sum_cputime
 
@@ -228,7 +235,7 @@ def process_period(config, period):
         wall_time=sum_walltime,
         cpu_time=sum_cputime,
         n_jobs=len(endtime),
-        # this seems faster than getting min/max during the dict iteration above
+        # this appears faster than getting min/max during the dict iteration above
         first_end=round(min(endtime.values())),
         last_end=round(max(endtime.values()))
     )
