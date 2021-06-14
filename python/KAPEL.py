@@ -258,8 +258,8 @@ def main(envFile):
     print('time periods:')
     print(periods)
 
-    for period in periods:
-        process_period(config=cfg, period)
+    for p in periods:
+        process_period(config=cfg, period=p)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")
