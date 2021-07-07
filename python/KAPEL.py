@@ -251,7 +251,7 @@ def process_period(config, period):
 
 def main(envFile):
     # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
-    print('Starting KAPEL processor: ' + __file__)
+    print('Starting KAPEL processor: ' + __file__ + ' at ' + datetime.datetime.now(tz=datetime.timezone.utc).isoformat())
     cfg = KAPELConfig(envFile)
 
     periods = get_time_periods(cfg.publishing_mode, start_time=cfg.query_start, end_time=cfg.query_end)
