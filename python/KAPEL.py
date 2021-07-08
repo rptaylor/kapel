@@ -10,6 +10,7 @@
 
 import argparse
 import datetime
+import resource
 from timeit import default_timer as timer
 import dateutil.relativedelta
 from dateutil.rrule import rrule, MONTHLY
@@ -181,7 +182,7 @@ def process_period(config, period):
         results[query_name] = dict(rearrange(raw_results[query_name]))
         result_lengths.append(len(results[query_name]))
         t3 = timer()
-        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[query_name])} items from {len(raw_results[query_name])} results.')
+        print(f'Query finished in {t2 - t1} s, processed in {t3 - t2} s. Got {len(results[query_name])} items from {len(raw_results[query_name])} results. Peak RAM usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}K.')
         del raw_results[query_name]
 
     cputime = results['cputime']
