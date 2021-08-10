@@ -64,4 +64,4 @@ def doQueries(instant, duration):
 
 
 
-doQueries("2021-06-11T00:00:00.00Z", "24h")
+doQueries("2021-08-01T00:00:00+00:00", "2678400s")
