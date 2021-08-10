@@ -39,7 +39,6 @@ def doQueries(instant, duration):
       'time': instant,
       'timeout': TIMEOUT,
   })
-
 # These are lists of dicts.
 # Each dict in the list contains:
 # 'metric': a dict of key-value pairs of labels, one of which is the pod name (exported_pod)
@@ -48,14 +47,12 @@ def doQueries(instant, duration):
   endtime_results = endtime_response.json()['data']['result']
   starttime_results = starttime_response.json()['data']['result']
   cores_results = cores_response.json()['data']['result']
-
 # construct random-accessible dicts (instead of lists of dicts) so we can reference by the exported_pod label.
 # cast from string to number while we're at it.
   cputime = {item['metric']['exported_pod']:float(item['value'][1]) for item in cputime_results}
   endtime = {item['metric']['exported_pod']:float(item['value'][1]) for item in endtime_results}
   starttime = {item['metric']['exported_pod']:float(item['value'][1]) for item in starttime_results}
   cores = {item['metric']['exported_pod']:float(item['value'][1]) for item in cores_results}
-
   print(len(cputime))
   print(len(endtime))
   print(len(starttime))
