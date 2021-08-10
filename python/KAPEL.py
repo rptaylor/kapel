@@ -190,10 +190,11 @@ def process_period(config, period):
     starttime = results['starttime']
     cores = results['cores']
 
-    # Confirm the assumption that cputime (and endtime) should have the fewest entries, while starttime and cores may have additional ones
-    # corresponding to jobs that have started but not finished yet. We only want the (completed) jobs for which all values are available.
+    # Confirm the assumption that cputime should have the fewest entries, while starttime and cores may have additional ones
+    # corresponding to jobs that have started but not finished yet, and endtime may have additional ones if there are pods without CPU resource requests.
+    # We only want the jobs for which all values are available: start time, end time, CPU request.
     # Note that jobs which started last month and finished this month will be properly included and accounted in this month.
-    assert len(endtime) == min(result_lengths), "endtime should be the shortest list"
+    assert len(cputime) == min(result_lengths), "cputime should be the shortest list"
 
     # However, jobs that finished last month may show up in this month's data if they are still present on the cluster this month (in Completed state).
     # Exclude them by filtering with a lambda (since you can't pass an argument to a function object AFAIK).
