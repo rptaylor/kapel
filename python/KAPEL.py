@@ -195,19 +195,19 @@ def process_period(config, period):
     # We only want the jobs for which all values are available: start time, end time, CPU request.
     # Note that jobs which started last month and finished this month will be properly included and accounted in this month.
     assert len(cputime) == min(result_lengths), "cputime should be the shortest list"
-
     # However, jobs that finished last month may show up in this month's data if they are still present on the cluster this month (in Completed state).
     # Exclude them by filtering with a lambda (since you can't pass an argument to a function object AFAIK).
     endtime = dict(filter(lambda x: x[1] >= datetime.datetime.timestamp(period_start), endtime.items()))
-
+    # Prepare to iterate over jobs which meet all criteria.
+    valid_jobs = cputime.keys() & endtime.keys()
     # avoid sending empty records
-    if len(endtime) == 0:
+    if len(valid_jobs) == 0:
         print('No records to process.')
         return
 
     sum_cputime = 0
     t4 = timer()
-    for key in endtime:
+    for key in valid_jobs:
         assert endtime[key] > starttime[key], "job end time is before start time"
         # double check cputime calc of this job
         delta = abs(cputime[key] - (endtime[key] - starttime[key])*cores[key])
