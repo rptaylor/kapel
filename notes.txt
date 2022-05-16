@@ -1,0 +1,8 @@
+# Process to update helm repo:
+copy the chart dir out of the git repo
+git checkout gh-pages
+copy the chart dir into the git repo
+helm package chart/
+rm -rf chart/
+helm repo index .
+git add, commit, push
