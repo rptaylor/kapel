@@ -119,7 +119,10 @@ def get_gap_time_periods(start, end):
     intervals.pop(0)
     intervals.insert(0, start)
     # make sure end is after the last interval, then add it as the last
-    assert end > intervals[-1]
+    print('intervals DEBUG:') 
+    for i in intervals:
+        print(i.isoformat())
+    assert end >= intervals[-1]
     intervals.append(end)
     assert len(intervals) >= 2
     # finally we have a list of intervals. Each item will be the start of a monthly publishing period, going until the next item.
