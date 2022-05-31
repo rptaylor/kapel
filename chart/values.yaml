@@ -19,7 +19,8 @@ processor:
     requests:
       cpu: "0.5"
       memory: "500Mi"
-  # See KAPELConfig.py for full details on required configuration
+  # See KAPELConfig.py for full details on required configuration.
+  # Along with SITE_NAME and SUBMIT_HOST, you will also need to define BENCHMARK_VALUE (the HS06 score) and VO_NAME.
   config: |
     SITE_NAME: "EXAMPLE-T2"
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
@@ -36,8 +37,8 @@ ssmsend:
       memory: "50Mi"
   # Whether to actually send data. Use false for testing.
   enabled: true
-  # Location of ssmsend container
-  image_repository: ""
+  # Location of ssmsend container. Feel free to build your own.
+  image_repository: "git.computecanada.ca:4567/rptaylor/misc/ssmsend"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
   host: "msg.argo.grnet.gr"

@@ -1,12 +1,12 @@
-# kapel
-APEL accounting for Kubernetes.
+# KAPEL 
+KAPEL is APEL accounting for Kubernetes.
 
 ## Requirements
 - X509 certificate and key for publishing APEL records with ssmsend
   - Note: ssmsend only uses the certificate for content signing, not TLS, so the DN of the certificate does not need to match any host name.
     It only needs to match the "Host DN" field in GOCDB for the gLite-APEL service.
 - ssmsend container built using the provided Containerfile and pushed to an accessible registry server
-- kube-state-metrics and Prometheus (installation via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
+- kube-state-metrics and Prometheus (installing both via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
   - All pod metrics that are collected via kube-state-metrics will be used, so you must set `.Values.kube-state-metrics.namespaces`
     to ensure that accounting records are only published for pods in the appropriate namespace(s).
   - Pods must specify CPU resource requests in order to be accounted.
@@ -19,29 +19,12 @@ APEL accounting for Kubernetes.
       but differs from the behaviour of the upstream kube-state-metrics community chart.
   - For large production deployments (examples are based on a cluster with about 125 nodes and 7000 cores):
     - Increase `.Values.prometheus.querySpec.timeout` (e.g. ~ 1800s) to allow long queries to succeed.
-    - Apply sufficient resource requests and limits, e.g.
-```
-prometheus:
-  resources:
-    requests:
-      cpu: "2000m"
-      memory: "32Gi"
-    limits:
-      cpu: "8000m"
-      memory: "64Gi"
-
-kube-state-metrics:
-  resources:
-    limits: 
-      cpu: 2000m
-      memory: 2048Mi
-    requests: 
-      cpu: 200m
-      memory: 256Mi
-```
+    - Apply sufficient CPU and memory resource requests and limits.
 
 ## Configuration
-See [values.yaml](chart/values.yaml) for the Helm chart values to configure.
+- See [kube-prometheus-example.yaml](docs/kube-prometheus-example.yaml) for an example values file to use for installation of the Bitnami kube-prometheus Helm chart.
+- See [values.yaml](chart/values.yaml) for the configurable values of the KAPEL Helm chart.
+- See [KAPELConfig.py](python/KAPELConfig.py) for descriptions of the settings used in KAPEL.
 
 ## Helm chart installation
-The kapel Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
+The KAPEL Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).

@@ -1,0 +1,76 @@
+# 20220531 Example values file for Bitnami kube-prometheus Helm chart installation (v8.0.0)
+# Refer to https://github.com/bitnami/charts/tree/master/bitnami/kube-prometheus
+
+prometheus:
+  # Queries can take ~> 10 minutes on a large busy cluster. Allow very long queries to avoid timeouts.
+  # See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#queryspec
+  querySpec:
+    timeout: 1800s
+
+  ## How long to retain metrics
+  retention: 120d
+
+  ## Maximum size of metrics
+  retentionSize: ""
+
+  # For a very large cluster (~7000 cores), to process large volumes of job metrics and accounting records.
+  resources:
+    requests:
+      cpu: "2000m"
+      memory: "16Gi"
+    limits:
+      cpu: "8000m"
+      memory: "64Gi"
+
+  ## for persistent Prometheus data. Make sure to review https://github.com/bitnami/charts/tree/master/bitnami/kube-prometheus#prometheus-parameters
+  ## to ensure the storage configuration is appropriate for your cluster.
+  persistence:
+    enabled: true
+
+kube-state-metrics:
+  # Limit metrics collection to only the namespace where compute jobs are executed.
+  namespaces: "harvester"
+
+  ## Collectors to be enabled. Only pods are required for accounting.
+  kubeResources:
+    certificatesigningrequests: false
+    configmaps: false
+    cronjobs: false
+    daemonsets: false
+    deployments: false
+    endpoints: false
+    horizontalpodautoscalers: false
+    ingresses: false
+    jobs: false
+    limitranges: false
+    mutatingwebhookconfigurations: false
+    namespaces: false
+    networkpolicies: false
+    nodes: false
+    persistentvolumeclaims: false
+    persistentvolumes: false
+    poddisruptionbudgets: false
+    pods: true
+    replicasets: false
+    replicationcontrollers: false
+    resourcequotas: false
+    secrets: false
+    services: false
+    statefulsets: false
+    storageclasses: false
+    verticalpodautoscalers: false
+    validatingwebhookconfigurations: false
+    volumeattachments: false
+
+  # According to https://github.com/kubernetes/kube-state-metrics/blob/master/README.md 
+  # this should be more than enough for a cluster with 500 nodes.
+  resources:
+    limits: 
+      cpu: 2000m
+      memory: 2048Mi
+    requests: 
+      cpu: 200m
+      memory: 256Mi
+
+alertmanager:
+  enabled: false
