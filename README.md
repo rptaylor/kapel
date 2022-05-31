@@ -6,7 +6,7 @@ KAPEL is APEL accounting for Kubernetes.
   - Note: ssmsend only uses the certificate for content signing, not TLS, so the DN of the certificate does not need to match any host name.
     It only needs to match the "Host DN" field in GOCDB for the gLite-APEL service.
 - ssmsend container built using the provided Containerfile and pushed to an accessible registry server
-- kube-state-metrics and Prometheus (installation via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
+- kube-state-metrics and Prometheus (installing both via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
   - All pod metrics that are collected via kube-state-metrics will be used, so you must set `.Values.kube-state-metrics.namespaces`
     to ensure that accounting records are only published for pods in the appropriate namespace(s).
   - Pods must specify CPU resource requests in order to be accounted.
@@ -27,4 +27,4 @@ KAPEL is APEL accounting for Kubernetes.
 - See [KAPELConfig.py](python/KAPELConfig.py) for descriptions of the settings used in KAPEL.
 
 ## Helm chart installation
-The kapel Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
+The KAPEL Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
