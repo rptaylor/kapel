@@ -45,7 +45,7 @@ class QueryLogic:
         # (which takes a range and returns a scalar), and as a result get the whole metric set. Finally, use group_left for many-to-one matching.
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
-        self.cputime = f'(max_over_time(kube_pod_completion_time[{queryRange}]) - max_over_time(kube_pod_start_time[{queryRange}])) * on (pod) group_left() max without (instance) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}]))'
+        self.cputime = f'(max_over_time(kube_pod_completion_time[{queryRange}]) - max_over_time(kube_pod_start_time[{queryRange}])) * on (pod) group_left() max without(instance) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}]))'
         self.endtime = f'max_over_time(kube_pod_completion_time[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}])'
