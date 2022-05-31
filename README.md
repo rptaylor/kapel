@@ -1,5 +1,5 @@
-# kapel
-APEL accounting for Kubernetes.
+# KAPEL 
+KAPEL is APEL accounting for Kubernetes.
 
 ## Requirements
 - X509 certificate and key for publishing APEL records with ssmsend
