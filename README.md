@@ -22,8 +22,8 @@ KAPEL is APEL accounting for Kubernetes.
     - Apply sufficient CPU and memory resource requests and limits.
 
 ## Configuration
+- See [kube-prometheus-example.yaml](docs/kube-prometheus-example.yaml) for an example values file to use for installation of the Bitnami kube-prometheus Helm chart.
 - See [values.yaml](chart/values.yaml) for the configurable values of the KAPEL Helm chart.
-- See [docs](docs/) for examples of values files to use for installation of KAPEL and Bitnami kube-prometheus Helm charts.
 - See [KAPELConfig.py](python/KAPELConfig.py) for descriptions of the settings used in KAPEL.
 
 ## Helm chart installation
