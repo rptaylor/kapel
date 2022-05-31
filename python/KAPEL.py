@@ -118,12 +118,15 @@ def get_gap_time_periods(start, end):
     # Replace the 1st element of the list (which has day artificially set to 1) with the real start
     intervals.pop(0)
     intervals.insert(0, start)
-    # make sure end is after the last interval, then add it as the last
+    # make sure end is after the last interval
     print('intervals DEBUG:') 
     for i in intervals:
         print(i.isoformat())
     assert end >= intervals[-1]
-    intervals.append(end)
+    # Now add end - unless (in the case of gap mode, or if the cron happens to run precisely at 00:00:00 on 1st day of month),
+    # the last element calculated using rrule could already be the desired interval end.
+    if end != intervals[-1]:
+      intervals.append(end)
     assert len(intervals) >= 2
     # finally we have a list of intervals. Each item will be the start of a monthly publishing period, going until the next item.
 
