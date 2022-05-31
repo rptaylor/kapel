@@ -38,21 +38,17 @@ class QueryLogic:
         # On the CPU core side, some pods don't share all the same labels: pods that haven't yet gotten scheduled to a node don't have the node label,
         # so we filter out the rows where it's null with '{node != ""}'
 
-        # Note: Prometheus renames some labels from KSM, e.g. from 'pod' to 'exported_pod', the latter of which is the label we're interested in.
-        # The 'instance' and 'pod' labels in Prometheus actually represent the IP:port and name, respectively, of the KSM pod that Prometheus got the metric from.
-        # When KSM is redeployed (or if the KSM deployment has > 1 pod), the 'instance' and 'pod' labels may have different values,
-        # which would cause a label mismatch, so we use without to exclude them.
+        # The 'instance' label in Prometheus actually represents the IP and port of the KSM pod that Prometheus retrieved the metric from.
+        # When KSM is redeployed (or if the KSM deployment has > 1 pod), the 'instance' label may have different values,
+        # which would cause label matching problems, so we use without to exclude it.
         # Also, use the 'max' aggregation operator (which only takes a scalar) on the result of max_over_time
         # (which takes a range and returns a scalar), and as a result get the whole metric set. Finally, use group_left for many-to-one matching.
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
-
-        # Note some of these queries return duplicate results - without (instance, pod) does not seem to work properly.
-        # Would be very bad but rearrange() overwrites duplicates
-        self.cputime = f'(max_over_time(kube_pod_completion_time[{queryRange}]) - max_over_time(kube_pod_start_time[{queryRange}])) * on (exported_pod) group_left() max without (instance, pod) (max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{queryRange}]))'
+        self.cputime = f'(max_over_time(kube_pod_completion_time[{queryRange}]) - max_over_time(kube_pod_start_time[{queryRange}])) * on (pod) group_left() max without (instance) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}]))'
         self.endtime = f'max_over_time(kube_pod_completion_time[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time[{queryRange}])'
-        self.cores = f'max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{queryRange}])'
+        self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}])'
 
 def summary_message(config, year, month, wall_time, cpu_time, n_jobs, first_end, last_end):
     output = (
@@ -122,9 +118,12 @@ def get_gap_time_periods(start, end):
     # Replace the 1st element of the list (which has day artificially set to 1) with the real start
     intervals.pop(0)
     intervals.insert(0, start)
-    # make sure end is after the last interval, then add it as the last
-    assert end > intervals[-1]
-    intervals.append(end)
+    # make sure end is after the last interval
+    assert end >= intervals[-1]
+    # Now add end - unless (in the case of gap mode, or if the cron happens to run precisely at 00:00:00 on 1st day of month),
+    # the last element calculated using rrule was already the desired interval end.
+    if end != intervals[-1]:
+      intervals.append(end)
     assert len(intervals) >= 2
     # finally we have a list of intervals. Each item will be the start of a monthly publishing period, going until the next item.
 
@@ -146,12 +145,12 @@ def get_gap_time_periods(start, end):
     return periods
 
 # Take a list of dicts from the prom query and construct a random-accessible dict (casting from string to float while we're at it) via generator.
-# (actually a list of tuples, so use dict() on the output) that can be referenced by the 'exported_pod' label as a key.
+# (actually a list of tuples, so use dict() on the output) that can be referenced by the 'pod' label as a key.
 # NB: this overwrites duplicate results if we get any from the prom query!
 def rearrange(x):
     for item in x:
         # this produces each of the (key, value) tuples in the list
-        yield item['metric']['exported_pod'], float(item['value'][1])
+        yield item['metric']['pod'], float(item['value'][1])
 
 # process a time period (do prom query, process data, write output)
 # takes a KAPELConfig object and one element of output from get_time_periods
@@ -173,7 +172,7 @@ def process_period(config, period):
     # iterate over each query (cputime, starttime, endtime, cores) producing raw_results['cputime'] etc.
     for query_name, query_string in vars(queries).items():
         # Each of these raw_results is a list of dicts. Each dict in the list represents an individual data point, and contains:
-        # 'metric': a dict of one or more key-value pairs of labels, one of which is the pod name ('exported_pod').
+        # 'metric': a dict of one or more key-value pairs of labels, one of which is the pod name.
         # 'value': a list in which the 0th element is the timestamp of the value, and 1th element is the actual value we're interested in.
         print(f'Executing {query_name} query: {query_string}')
         t1 = timer()

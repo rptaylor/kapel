@@ -17,7 +17,7 @@ class KAPELConfig:
         # The default behaviour ("auto" mode) is to publish records for the previous month, and up to the current day of the current month.
         self.publishing_mode = env.str("PUBLISHING_MODE", "auto")
 
-        # If PUBLISH_MODE is "gap" instead, then a fixed time period will be queried instead and we need the start and end to be specified.
+        # If PUBLISHING_MODE is "gap" instead, then a fixed time period will be queried instead and we need the start and end to be specified.
         # Format: ISO 8601, like "2020-12-20T07:20:50.52Z", to avoid complications with time zones and leap seconds.
         # Timezone should be specified, and it should be UTC for consistency with the auto mode publishing.
         # IMPORTANT NOTE: since only APEL summary records are supported (not individual job records),
@@ -26,7 +26,7 @@ class KAPELConfig:
         # that QUERY_START is precisely the beginning of a month in order to produce a complete summary record for that month which will take precedence over
         # any other records containing fewer jobs that may have already been published. The same applies for QUERY_END
         # matching the end of the month (unless it is the current month at the time of publishing, in which case a subsequent run in auto mode will eventually
-        # complete the records for this month).  So QUERY_START (and possibly QUERY_END) should look like e.g. '2021-02-01T00:00:00+00:00'
+        # complete the records for this month). So QUERY_START (and possibly QUERY_END) should look like e.g. '2021-02-01T00:00:00+00:00'
         if self.publishing_mode == "gap":
             self.query_start = env.datetime("QUERY_START")
             self.query_end = env.datetime("QUERY_END")

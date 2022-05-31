@@ -19,7 +19,8 @@ processor:
     requests:
       cpu: "0.5"
       memory: "500Mi"
-  # See KAPELConfig.py for full details on required configuration
+  # See KAPELConfig.py for full details on required configuration.
+  # Along with SITE_NAME and SUBMIT_HOST, you will also need to define BENCHMARK_VALUE (the HS06 score) and VO_NAME.
   config: |
     SITE_NAME: "EXAMPLE-T2"
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
@@ -36,15 +37,15 @@ ssmsend:
       memory: "50Mi"
   # Whether to actually send data. Use false for testing.
   enabled: true
-  # Location of ssmsend container
-  image_repository: ""
+  # Location of ssmsend container. Feel free to build your own.
+  image_repository: "git.computecanada.ca:4567/rptaylor/misc/ssmsend"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
   host: "msg.argo.grnet.gr"
-  # base64-encoded strings of the X509 public host cert and private key for APEL publisher.
+  # base64-encoded strings of the X509 public cert and private key for APEL publisher.
   # Using a base64 encoded string with no line breaks avoids issues of indentation and double YAML encoding if Ansible is used for Helm.
-  hostcert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgaG9zdCBjZXJ0IGZvciBBUEVMIHB1Ymxpc2hlcgo=
-  hostkey: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGhvc3Qga2V5IGZvciBBUEVMIHB1Ymxpc2hlcgo=
+  x509cert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgY2VydCBmb3IgQVBFTCBwdWJsaXNoZXIK
+  x509key: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGtleSBmb3IgQVBFTCBwdWJsaXNoZXIK
 
 nameOverride: ""
 fullnameOverride: ""

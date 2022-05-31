@@ -18,8 +18,8 @@ data:
     use_ssl: true
 
     [certificates]
-    certificate: /ssmsend-certs/hostcert.pem
-    key: /ssmsend-certs/hostkey.pem
+    certificate: /ssmsend-certs/x509cert.pem
+    key: /ssmsend-certs/x509key.pem
     capath: /etc/grid-security/certificates
 
     [messaging]
