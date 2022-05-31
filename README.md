@@ -19,29 +19,12 @@ APEL accounting for Kubernetes.
       but differs from the behaviour of the upstream kube-state-metrics community chart.
   - For large production deployments (examples are based on a cluster with about 125 nodes and 7000 cores):
     - Increase `.Values.prometheus.querySpec.timeout` (e.g. ~ 1800s) to allow long queries to succeed.
-    - Apply sufficient resource requests and limits, e.g.
-```
-prometheus:
-  resources:
-    requests:
-      cpu: "2000m"
-      memory: "32Gi"
-    limits:
-      cpu: "8000m"
-      memory: "64Gi"
-
-kube-state-metrics:
-  resources:
-    limits: 
-      cpu: 2000m
-      memory: 2048Mi
-    requests: 
-      cpu: 200m
-      memory: 256Mi
-```
+    - Apply sufficient CPU and memory resource requests and limits.
 
 ## Configuration
-See [values.yaml](chart/values.yaml) for the Helm chart values to configure.
+- See [values.yaml](chart/values.yaml) for the configurable values of the KAPEL Helm chart.
+- See [docs](docs/) for examples of values files to use for installation of KAPEL and Bitnami kube-prometheus Helm charts.
+- See [KAPELConfig.py](python/KAPELConfig.py) for descriptions of the settings used in KAPEL.
 
 ## Helm chart installation
 The kapel Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).

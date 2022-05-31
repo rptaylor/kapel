@@ -1,0 +1,17 @@
+# 20220531 Example values file for KAPEL Helm chart installation.
+
+pspName: "harvester_PSP"
+
+processor:
+  config: |-
+    SITE_NAME: "EXAMPLE-T2"
+    SUBMIT_HOST: "k8s.example.org:6443/insert_job_namespace"
+    VO_NAME: "atlas"
+    BENCHMARK_VALUE: "15.0"
+
+ssmsend:
+  image_repository: git.computecanada.ca:4567/rptaylor/misc/ssmsend
+  image_tag: v3.2.1
+  # insert your base64-encoded cert and key
+  x509cert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgY2VydCBmb3IgQVBFTCBwdWJsaXNoZXIK
+  x509key: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGtleSBmb3IgQVBFTCBwdWJsaXNoZXIK
