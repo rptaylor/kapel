@@ -2,7 +2,8 @@
 # Refer to https://github.com/bitnami/charts/tree/master/bitnami/kube-prometheus
 
 prometheus:
-  # allow very long queries for accounting. See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#queryspec
+  # Queries can take ~> 10 minutes on a large busy cluster. Allow very long queries to avoid timeouts.
+  # See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#queryspec
   querySpec:
     timeout: 1800s
 
@@ -12,6 +13,7 @@ prometheus:
   ## Maximum size of metrics
   retentionSize: ""
 
+  # For a very large cluster (~7000 cores), to process large volumes of job metrics and accounting records.
   resources:
     requests:
       cpu: "2000m"
@@ -26,10 +28,10 @@ prometheus:
     enabled: true
 
 kube-state-metrics:
-  # Limit metrics collection to only harvester namespace.
+  # Limit metrics collection to only the namespace where compute jobs are executed.
   namespaces: "harvester"
 
-  ## Collectors to be enabled. Pods required for accounting, nodes could be useful for monitoring.
+  ## Collectors to be enabled. Only pods are required for accounting.
   kubeResources:
     certificatesigningrequests: false
     configmaps: false
@@ -44,7 +46,7 @@ kube-state-metrics:
     mutatingwebhookconfigurations: false
     namespaces: false
     networkpolicies: false
-    nodes: true
+    nodes: false
     persistentvolumeclaims: false
     persistentvolumes: false
     poddisruptionbudgets: false
