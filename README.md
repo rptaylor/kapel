@@ -10,8 +10,8 @@ APEL accounting for Kubernetes.
   - All pod metrics that are collected via kube-state-metrics will be used, so you must set `.Values.kube-state-metrics.namespaces`
     to ensure that accounting records are only published for pods in the appropriate namespace(s).
   - Pods must specify CPU resource requests in order to be accounted.
-  - You may wish to set some of the collectors in `.Values.kube-state-metrics.kubeResources` to False to disable collection of
-    unnecessary metrics and reduce data volume. Only the `pods` collector is required.
+  - You may wish to disable collection of some resources in `.Values.kube-state-metrics.kubeResources` to reduce the volume of unnecessary data.
+    Only the collection of `pods` resources is required.
   - You should ensure that the Prometheus deployment is configured to use persistent storage so the collected metrics data will be
     persisted for a sufficient period of time (e.g. at least a couple months).
   - kube-state-metrics should be configured with `honorLabels: true`
@@ -39,6 +39,9 @@ kube-state-metrics:
       cpu: 200m
       memory: 256Mi
 ```
+
+## Configuration
+See [values.yaml](chart/values.yaml) for the Helm chart values to configure.
 
 ## Helm chart installation
 The kapel Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
