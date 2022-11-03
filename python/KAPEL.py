@@ -266,7 +266,7 @@ def main(envFile):
     
     if found_records:
       print('Manually-defined records detected in ' + manual_path)
-      dirq = QueueSimple(str(config.output_path))
+      dirq = QueueSimple(str(cfg.output_path))
       for record in found_records:
         added_file = dirq.add_path(record)
         print(f'Adding record from {record} to {config.output_path}/{added_file}:')
