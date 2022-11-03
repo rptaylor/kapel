@@ -275,9 +275,9 @@ def main(envFile):
         src_file = join(manual_path, record)
         dst_file = join(dest_dir, record)
         copyfile(src_file, dst_file)
-        added_file = dirq.add_path(dst_file)
-        print(f'Adding record from {dst_file} to {cfg.output_path}/{added_file}:')
-        print('--------------------------------\n' + Path(dst_file).read_text() + '--------------------------------')
+        added_file = join(cfg.output_path, dirq.add_path(dst_file))
+        print(f'Adding record from {dst_file} to {added_file}:')
+        print('--------------------------------\n' + Path(added_file).read_text() + '--------------------------------')
 
     else:
       # No manual records detected, do normal procedure
