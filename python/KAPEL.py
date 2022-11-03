@@ -274,6 +274,7 @@ def main(envFile):
       for record in found_records:
         src_file = join(manual_path, record)
         dst_file = join(dest_dir, record)
+        print(f'Copying file from {src_file} to {dst_file}')
         copyfile(src_file, dst_file)
         added_file = join(cfg.output_path, dirq.add_path(dst_file))
         print(f'Adding record from {dst_file} to {added_file}:')
