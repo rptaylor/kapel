@@ -5,7 +5,6 @@ KAPEL is APEL accounting for Kubernetes.
 - X509 certificate and key for publishing APEL records with ssmsend
   - Note: ssmsend only uses the certificate for content signing, not TLS, so the DN of the certificate does not need to match any host name.
     It only needs to match the "Host DN" field in GOCDB for the gLite-APEL service.
-- ssmsend container built using the provided Containerfile and pushed to an accessible registry server
 - kube-state-metrics and Prometheus (installing both via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
   - All pod metrics that are collected via kube-state-metrics will be used, so you must set `.Values.kube-state-metrics.namespaces`
     to ensure that accounting records are only published for pods in the appropriate namespace(s).

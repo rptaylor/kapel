@@ -37,7 +37,7 @@ ssmsend:
       memory: "50Mi"
   # Whether to actually send data. Use false for testing.
   enabled: true
-  # Location of ssmsend container. Feel free to build your own.
+  # Location of ssmsend container. Feel free to instead build your own using the provided Containerfile.
   image_repository: "git.computecanada.ca:4567/rptaylor/misc/ssmsend"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
