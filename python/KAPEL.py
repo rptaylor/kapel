@@ -276,7 +276,7 @@ def main(envFile):
         dst_file = join(dest_dir, record)
         copyfile(src_file, dst_file)
         added_file = dirq.add_path(dst_file)
-        print(f'Adding record from {src_file} to {dest_dir}/{added_file}:')
+        print(f'Adding record from {dst_file} to {cfg.output_path}/{added_file}:')
         print('--------------------------------\n' + Path(dst_file).read_text() + '--------------------------------')
 
     else:
