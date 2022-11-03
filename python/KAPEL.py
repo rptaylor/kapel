@@ -261,7 +261,7 @@ def main(envFile):
     cfg = KAPELConfig(envFile)
 
     # look for manually-defined records, from the manual configmap
-    manual_path = '/srv/manual'
+    manual_path = '/srv/kapel/manual'
     found_records = [join(manual_path, f) for f in listdir(manual_path) if isfile(join(manual_path, f))]
     
     if found_records:
