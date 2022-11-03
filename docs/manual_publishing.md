@@ -4,7 +4,7 @@ Sometimes it may be necessary to publish manually-defined records, instead of qu
 There is a ConfigMap created by the Helm chart for this, which is named `kapel-manual-records` by default.
 Manually edit that ConfigMap (e.g. `kubectl edit`) and insert the accounting information that you want to publish.
 The keys of the ConfigMap are arbitrary and you can define as many as needed.
-For example it could look like this:
+For example it could look something like this:
 ```
 apiVersion: v1
 kind: ConfigMap
