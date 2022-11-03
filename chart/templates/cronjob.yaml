@@ -50,7 +50,7 @@ spec:
               configMap:
                 name: {{ .Release.Name }}-manual-records
           initContainers:
-            - name: {{ .Release.Name }}-processor
+            - name: processor
               image: library/python:3
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
@@ -78,7 +78,7 @@ spec:
                 - name: manual-records
                   mountPath: /srv/manual
           containers:
-            - name: {{ .Release.Name }}-ssmsend
+            - name: ssmsend
               image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
               resources:
                 {{- toYaml .Values.ssmsend.resources | nindent 16 }}
