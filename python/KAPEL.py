@@ -14,6 +14,9 @@ import resource
 from timeit import default_timer as timer
 import dateutil.relativedelta
 from dateutil.rrule import rrule, MONTHLY
+from os import listdir
+from os.path import isfile, join
+from pathlib import Path
 
 from KAPELConfig import KAPELConfig
 from prometheus_api_client import PrometheusConnect
@@ -226,9 +229,9 @@ def process_period(config, period):
     sum_walltime = sum_cputime
 
     print(f'total cputime: {sum_cputime}, total walltime: {sum_walltime}')
-    # Write output to the message queue on local filesystem
-    # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
-    dirq = QueueSimple(str(config.output_path))
+    t5 = timer()
+    print(f'Analyzed {len(endtime)} records in {t5 - t4} s.')
+
     summary_output = summary_message(
         config,
         year=period['year'],
@@ -241,10 +244,12 @@ def process_period(config, period):
         last_end=round(max(endtime.values()))
     )
     sync_output = sync_message(config, year=period['year'], month=period['month'], n_jobs=len(endtime))
-    t5 = timer()
+
+    # Write output to the message queue on local filesystem
+    # https://dirq.readthedocs.io/en/latest/queuesimple.html#directory-structure
+    dirq = QueueSimple(str(config.output_path))
     summary_file = dirq.add(summary_output)
     sync_file = dirq.add(sync_output)
-    print(f'Analyzed {len(endtime)} records in {t5 - t4} s.')
     print(f'Writing summary record to {config.output_path}/{summary_file}:')
     print('--------------------------------\n' + summary_output + '--------------------------------')
     print(f'Writing sync record to {config.output_path}/{sync_file}:')
@@ -255,12 +260,26 @@ def main(envFile):
     print('Starting KAPEL processor: ' + __file__ + ' at ' + datetime.datetime.now(tz=datetime.timezone.utc).isoformat())
     cfg = KAPELConfig(envFile)
 
-    periods = get_time_periods(cfg.publishing_mode, start_time=cfg.query_start, end_time=cfg.query_end)
-    print('time periods:')
-    print(periods)
+    # look for manually-defined records, from the manual configmap
+    manual_path = '/srv/manual'
+    found_records = [join(manual_path, f) for f in listdir(manual_path) if isfile(join(manual_path, f))]
+    
+    if found_records:
+      print('Manually-defined records detected in ' + manual_path)
+      dirq = QueueSimple(str(config.output_path))
+      for record in found_records:
+        added_file = dirq.add_path(record)
+        print(f'Adding record from {record} to {config.output_path}/{added_file}:')
+        print('--------------------------------\n' + Path(record).read_text() + '--------------------------------')
 
-    for p in periods:
-        process_period(config=cfg, period=p)
+    else:
+      # No manual records detected, do normal procedure
+      periods = get_time_periods(cfg.publishing_mode, start_time=cfg.query_start, end_time=cfg.query_end)
+      print('time periods:')
+      print(periods)
+
+      for p in periods:
+          process_period(config=cfg, period=p)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract Kubernetes job accounting data from Prometheus and prepare it for APEL publishing.")

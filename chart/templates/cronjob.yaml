@@ -46,6 +46,9 @@ spec:
             - name: apel-run-volume
               emptyDir:
                 sizeLimit: 50M
+            - name: manual-records
+              configMap:
+                name: {{ .Release.Name }}-manual-records
           initContainers:
             - name: {{ .Release.Name }}-processor
               image: library/python:3
@@ -72,6 +75,8 @@ spec:
               volumeMounts:
                 - name: apel-data-volume
                   mountPath: /srv/kapel
+                - name: manual-records
+                  mountPath: /srv/manual
           containers:
             - name: {{ .Release.Name }}-ssmsend
               image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
