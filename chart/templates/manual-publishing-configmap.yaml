@@ -1,0 +1,8 @@
+{{- /* Intentionally empty. Manually edit the configmap to add records for the manual publishing procedure. */ -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-manual-records
+  labels:
+    {{- include "kapel.labels" . | nindent 4 }}
+data:
