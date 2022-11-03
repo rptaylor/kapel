@@ -277,7 +277,7 @@ def main(envFile):
         copyfile(src_file, dst_file)
         added_file = dirq.add_path(dst_file)
         print(f'Adding record from {src_file} to {dest_dir}/{added_file}:')
-        print('--------------------------------\n' + Path(record).read_text() + '--------------------------------')
+        print('--------------------------------\n' + Path(dst_file).read_text() + '--------------------------------')
 
     else:
       # No manual records detected, do normal procedure
