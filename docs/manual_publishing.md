@@ -1,6 +1,6 @@
 # Procedure for publishing records manually
 
-Sometimes it may be necessary to publish manually-defined records instead of querying Prometheus to get accounting records.
+Sometimes it may be necessary to publish manually-defined records, instead of querying Prometheus to get accounting records.
 There is a ConfigMap created by the Helm chart for this, which is named `kapel-manual-records` by default.
 Manually edit that ConfigMap (e.g. `kubectl edit`) and insert the accounting information that you want to publish.
 The keys of the ConfigMap are arbitrary and you can define as many as needed.
