@@ -14,9 +14,10 @@ import resource
 from timeit import default_timer as timer
 import dateutil.relativedelta
 from dateutil.rrule import rrule, MONTHLY
-from os import listdir
+from os import listdir, mkdir
 from os.path import isfile, join
 from pathlib import Path
+from shutil import copyfile
 
 from KAPELConfig import KAPELConfig
 from prometheus_api_client import PrometheusConnect
@@ -261,15 +262,21 @@ def main(envFile):
     cfg = KAPELConfig(envFile)
 
     # look for manually-defined records, from the manual configmap
-    manual_path = '/srv/kapel/manual'
-    found_records = [join(manual_path, f) for f in listdir(manual_path) if isfile(join(manual_path, f))]
+    manual_path = '/srv/manual'
+    found_records = [ f for f in listdir(manual_path) if isfile(join(manual_path, f))]
     
     if found_records:
       print('Manually-defined records detected in ' + manual_path)
+      # Because dirq.add_path uses hard links, can't cross filesystems, have to copy files
+      dest_dir = join(cfg.output_path, 'manual')
+      mkdir(dest_dir)
       dirq = QueueSimple(str(cfg.output_path))
       for record in found_records:
-        added_file = dirq.add_path(record)
-        print(f'Adding record from {record} to {config.output_path}/{added_file}:')
+        src_file = join(manual_path, record)
+        dst_file = join(dest_dir, record)
+        copyfile(src_file, dst_file)
+        added_file = dirq.add_path(dst_file)
+        print(f'Adding record from {src_file} to {dest_dir}/{added_file}:')
         print('--------------------------------\n' + Path(record).read_text() + '--------------------------------')
 
     else:
