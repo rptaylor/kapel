@@ -211,7 +211,10 @@ def process_period(config, period):
     sum_cputime = 0
     t4 = timer()
     for key in valid_jobs:
-        assert endtime[key] > starttime[key], f"job end time is before start time for {key}"
+        if endtime[key] < starttime[key]:
+            # could happen due to inaccurate clocks?
+            print(f'WARNING: ignoring job {key} with negative duration: start={starttime[key]}, end={endtime[key]}')
+            continue
         # double check cputime calc of this job
         delta = abs(cputime[key] - (endtime[key] - starttime[key])*cores[key])
         assert delta < 0.001, "cputime calculation is inaccurate"
