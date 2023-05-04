@@ -44,12 +44,15 @@ class QueryLogic:
 
         # The 'instance' label in Prometheus actually represents the IP and port of the KSM pod that Prometheus retrieved the metric from.
         # When KSM is redeployed (or if the KSM deployment has > 1 pod), the 'instance' label may have different values,
-        # which would cause label matching problems, so we use without to exclude it.
+        # which would cause label matching problems, so we use 'without' to exclude instance.
+        # Sometimes a pod can fail and be restarted on a different node. Using max_over_time on starttime ensures that the latest start time is used.
+        # However this also results in duplicate CPU core records on all the nodes where the pod ran, so use 'without' to also exclude the
+        # node name and avoid many-to-many matching errors in the cputime query (duplicates in the cores query are collapsed by the rearrange function).
         # Also, use the 'max' aggregation operator (which only takes a scalar) on the result of max_over_time
         # (which takes a range and returns a scalar), and as a result get the whole metric set. Finally, use group_left for many-to-one matching.
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
-        self.cputime = f'(max_over_time(kube_pod_completion_time[{queryRange}]) - max_over_time(kube_pod_start_time[{queryRange}])) * on (pod) group_left() max without (instance) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}]))'
+        self.cputime = f'(max_over_time(kube_pod_completion_time[{queryRange}]) - max_over_time(kube_pod_start_time[{queryRange}])) * on (pod) group_left() max without (instance, node) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}]))'
         self.endtime = f'max_over_time(kube_pod_completion_time[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{queryRange}])'
