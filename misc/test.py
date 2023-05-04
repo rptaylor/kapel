@@ -10,10 +10,10 @@ API='/api/v1/query'
 TIMEOUT='500s'
 
 def doQueries(instant, duration):
-  CPUTIME_QUERY = f'(max_over_time(kube_pod_completion_time[{duration}]) - max_over_time(kube_pod_start_time[{duration}])) * on (pod) group_left() max without (instance) (max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{duration}]))'
+  CPUTIME_QUERY = f'(max_over_time(kube_pod_completion_time[{duration}]) - max_over_time(kube_pod_start_time[{duration}])) * on (pod) group_left() max without (instance) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{duration}]))'
   ENDTIME_QUERY = f'max_over_time(kube_pod_completion_time[{duration}])'
   STARTTIME_QUERY = f'max_over_time(kube_pod_start_time[{duration}])'
-  CORES_QUERY = f'max_over_time(kube_pod_container_resource_requests_cpu_cores{{node != ""}}[{duration}])'
+  CORES_QUERY = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != ""}}[{duration}])'
 
   cputime_response = requests.get(PROMETHEUS_SERVER + API,
     params={
@@ -61,7 +61,5 @@ def doQueries(instant, duration):
   print(len(starttime))
   print(len(cores))
   return cputime, endtime, starttime, cores
-
-
 
 doQueries("2021-06-11T00:00:00.00Z", "24h")
