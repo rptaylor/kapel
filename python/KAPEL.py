@@ -263,8 +263,7 @@ def process_period(config, period):
     print('--------------------------------\n' + sync_output + '--------------------------------')
 
 def main(envFile):
-    # TODO: need error handling if env file doesn't exist. See https://github.com/theskumar/python-dotenv/issues/297
-    print('Starting KAPEL processor: ' + __file__ + ' at ' + datetime.datetime.now(tz=datetime.timezone.utc).isoformat())
+    print(f'Starting KAPEL processor: {__file__} with envFile {envFile} at {datetime.datetime.now(tz=datetime.timezone.utc).isoformat()}')
     cfg = KAPELConfig(envFile)
 
     # look for manually-defined records, from the manual configmap
