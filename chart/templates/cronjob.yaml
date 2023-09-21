@@ -14,6 +14,7 @@ spec:
     spec:
       # Allow up to 12 hours and 2 pod retries for job completion (should be less than cron frequency)
       activeDeadlineSeconds: 43200
+      ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       backoffLimit: 2
       template:
         spec:
