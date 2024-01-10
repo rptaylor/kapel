@@ -5,7 +5,7 @@
 
 # Build and push ssmsend container
 ```
-registry=<example.org>
+registry=<example.org>  # git.computecanada.ca:4567/rptaylor/misc
 tag=<vX.Y.Z>
 
 buildah bud --squash -t ssmsend https://raw.githubusercontent.com/rptaylor/kapel/master/ssmsend-build/Containerfile
