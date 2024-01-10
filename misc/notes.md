@@ -15,7 +15,11 @@ buildah push $imageid $registry/ssmsend:$tag
 ```
 
 # Build and publish Helm chart to repository
-```
-helm package chart/
-helm repo index --url  https://rptaylor.github.io/kapel/  .
-```
+- First remember to update Chart.yaml with a new version (potentially appVersion too)
+- Copy the chart dir out of the git repo
+- `git checkout gh-pages`
+- Move the chart dir into the git repo
+- `helm package chart/`
+- `rm -rf chart/`
+- `helm repo index .`
+- git add, commit, push
