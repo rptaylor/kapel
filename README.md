@@ -1,5 +1,12 @@
 # KAPEL 
-KAPEL is APEL accounting for Kubernetes.
+KAPEL is container-native APEL accounting for Kubernetes.
+- Lightweight and stateless (data storage is handled by Prometheus).
+- Supports two publishing modes:
+  - 'auto' mode to publish the current month and previous month.
+  - 'gap' mode to (re)publish an arbitrary fixed time period.
+- Supports two data source modes:
+  - Normally, pod data is retrieved from Prometheus.
+  - For manual corrections, you can supply the accounting data to be published yourself.
 
 ## Requirements
 - X509 certificate and key for publishing APEL records with ssmsend
