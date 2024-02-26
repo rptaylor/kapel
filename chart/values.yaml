@@ -21,13 +21,13 @@ processor:
       cpu: "0.5"
       memory: "500Mi"
   # See KAPELConfig.py for full details on required configuration.
-  # Along with SITE_NAME and SUBMIT_HOST, you will also need to define BENCHMARK_VALUE (the HS06 score) and VO_NAME.
+  # Along with SITE_NAME and SUBMIT_HOST, you will also need to define BENCHMARK_VALUE, NAMESPACE, and VO_NAME.
   config: |
     SITE_NAME: "EXAMPLE-T2"
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
-    NAMESPACE: "harvester"
-    VO_NAME: "atlas"
-    BENCHMARK_VALUE: "15.0"
+    #BENCHMARK_VALUE: "15.0"
+    #NAMESPACE: "harvester"
+    #VO_NAME: "atlas"
   # name of git branch to use
   deploy_branch: "prod"
 
