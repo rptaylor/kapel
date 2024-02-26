@@ -17,6 +17,9 @@ class KAPELConfig:
         # The default behaviour ("auto" mode) is to publish records for the previous month, and up to the current day of the current month.
         self.publishing_mode = env.str("PUBLISHING_MODE", "auto")
 
+        # The Kubernetes namespace to query. Only pods in this namespace will be accounted.
+        self.namespace = env.str("NAMESPACE")
+
         # If PUBLISHING_MODE is "gap" instead, then a fixed time period will be queried instead and we need the start and end to be specified.
         # Format: ISO 8601, like "2020-12-20T07:20:50.52Z", to avoid complications with time zones and leap seconds.
         # Timezone should be specified, and it should be UTC for consistency with the auto mode publishing.

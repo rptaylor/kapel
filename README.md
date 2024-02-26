@@ -6,9 +6,6 @@ KAPEL is APEL accounting for Kubernetes.
   - Note: ssmsend only uses the certificate for content signing, not TLS, so the DN of the certificate does not need to match any host name.
     It only needs to match the "Host DN" field in GOCDB for the gLite-APEL service.
 - kube-state-metrics and Prometheus (installing both via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
-  - All pod metrics that are collected via kube-state-metrics will be used, so you must set `.Values.kube-state-metrics.namespaces`
-    to ensure that accounting records are only published for pods in the appropriate namespace(s).
-  - Pods must specify CPU resource requests in order to be accounted.
   - You may wish to disable collection of some resources in `.Values.kube-state-metrics.kubeResources` to reduce the volume of unnecessary data.
     Only the collection of `pods` resources is required.
   - You should ensure that the Prometheus deployment is configured to use persistent storage so the collected metrics data will be
@@ -19,6 +16,9 @@ KAPEL is APEL accounting for Kubernetes.
   - For large production deployments (examples are based on a cluster with about 125 nodes and 7000 cores):
     - Increase `.Values.prometheus.querySpec.timeout` (e.g. ~ 1800s) to allow long queries to succeed.
     - Apply sufficient CPU and memory resource requests and limits.
+
+Pods must specify CPU resource requests in order to be accounted. All pods in a specified namespace will be accounted.
+To do accounting for different projects in multiple namespaces, a KAPEL chart can be installed and configured for each one.
 
 ## Configuration
 - See [kube-prometheus-example.yaml](docs/kube-prometheus-example.yaml) for an example values file to use for installation of the Bitnami kube-prometheus Helm chart.
