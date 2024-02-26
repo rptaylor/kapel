@@ -29,7 +29,7 @@ from dirq.QueueSimple import QueueSimple
 
 # Contains the PromQL queries
 class QueryLogic:
-    def __init__(self, queryRange):
+    def __init__(self, queryRange, namespace):
         # Use a query that returns individual job records to get high granularity information, which can be processed into summary records as needed.
 
         # queryRange determines how far back to query. The query will cover the period from (t - queryRange) to t,
@@ -52,10 +52,10 @@ class QueryLogic:
         # (which takes a range and returns a scalar), and as a result get the whole metric set. Finally, use group_left for many-to-one matching.
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
-        self.cputime = f'(max_over_time(kube_pod_completion_time{{namespace="{self.namespace}"}}[{queryRange}]) - max_over_time(kube_pod_start_time{{namespace="{self.namespace}"}}[{queryRange}])) * on (pod) group_left() max without (instance, node) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{self.namespace}"}}[{queryRange}]))'
-        self.endtime = f'max_over_time(kube_pod_completion_time{{namespace="{self.namespace}"}}[{queryRange}])'
-        self.starttime = f'max_over_time(kube_pod_start_time{{namespace="{self.namespace}"}}[{queryRange}])'
-        self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{self.namespace}"}}[{queryRange}])'
+        self.cputime = f'(max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}]) - max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])) * on (pod) group_left() max without (instance, node) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}]))'
+        self.endtime = f'max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}])'
+        self.starttime = f'max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])'
+        self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}])'
 
 def summary_message(config, year, month, wall_time, cpu_time, n_jobs, first_end, last_end):
     output = (
@@ -168,7 +168,7 @@ def process_period(config, period):
         f"Processing year {period['year']}, month {period['month']}, "
         f"querying from {period['instant'].isoformat()} and going back {period['range_sec']} s to {period_start.isoformat()}."
     )
-    queries = QueryLogic(queryRange=(str(period['range_sec']) + 's'))
+    queries = QueryLogic(queryRange=(str(period['range_sec']) + 's'), namespace=config.namespace)
 
     # SSL generally not used for Prometheus access within a cluster
     # Docs on instant query API: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries
