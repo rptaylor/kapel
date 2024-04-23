@@ -11,6 +11,9 @@ gridSecurityHostPath: true
 # Other than that no special privileges are required so a default PSP should be sufficient.
 pspName: ""
 
+# "ssmsend" or "gratia"
+output-format: ssmsend
+
 processor:
   resources:
     # very generous estimate: approx 10 KiB memory per job record
@@ -31,6 +34,7 @@ processor:
   # name of git branch to use
   deploy_branch: "prod"
 
+
 ssmsend:
   resources:
     limits:
@@ -50,6 +54,26 @@ ssmsend:
   # Using a base64 encoded string with no line breaks avoids issues of indentation and double YAML encoding if Ansible is used for Helm.
   x509cert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgY2VydCBmb3IgQVBFTCBwdWJsaXNoZXIK
   x509key: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGtleSBmb3IgQVBFTCBwdWJsaXNoZXIK
+
+gratia:
+  resources:
+    limits:
+      cpu: "0.5"
+      memory: "500Mi"
+    requests:
+      cpu: "0.1"
+      memory: "50Mi"
+  # Location of gratia output container.
+  image_repository: "hub.opensciencegrid.org/mwestphall/kapel-gratia-output"
+  # Optionally overwrite container version. Default is chart appVersion.
+  image_tag: "latest"
+  config: |
+    GRATIA_CONFIG_PATH=/etc/kapel-gratia-output/gratia-config
+    GRATIA_REPORTER=osgpilot_meter
+    GRATIA_SERVICE=OSGPilotContainer
+    GRATIA_PROBE_MANAGER=condor
+    GRATIA_PROBE_VERSION=2.8.4-1.osg.el8.b2e780f
+
 
 nameOverride: ""
 fullnameOverride: ""

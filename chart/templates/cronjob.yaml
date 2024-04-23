@@ -28,6 +28,7 @@ spec:
           securityContext:
             runAsNonRoot: true
           volumes:
+            {{ if eq .Values.output-format "ssmsend" }}
             - name: ssmsend-config-volume
               configMap:
                 name: {{ .Release.Name }}-ssmsend-config
@@ -35,6 +36,7 @@ spec:
               secret:
                 secretName: {{ .Release.Name }}-ssmsend-secret
                 defaultMode: 0400
+            {{ end }}
             {{ if .Values.gridSecurityHostPath }}
             - name: grid-security-volume
               hostPath:
@@ -79,6 +81,18 @@ spec:
                 - name: manual-records
                   mountPath: /srv/manual
           containers:
+          {{ if eq .Values.output-format "gratia" }}
+            - name: gratia-output
+              image: {{ .Values.gratia.image_repository}}:{{ .Values.gratia.image_tag | default .Chart.AppVersion }}
+              resources:
+                {{- toYaml .Values.gratia.resources | nindent 16 }}
+              envFrom:
+                - configMapRef:
+                    name: {{ .Release.Name }}-gratia-output-config
+              volumeMounts:
+                - name: apel-data-volume
+                  mountPath: /srv/kapel
+          {{ else }}
             - name: ssmsend
               image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
               resources:
@@ -109,3 +123,4 @@ spec:
                   mountPath: /var/spool/apel/outgoing
                 - name: run-volume
                   mountPath: /var/run/apel
+          {{ end }}
