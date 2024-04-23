@@ -68,11 +68,11 @@ gratia:
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: "latest"
   config: |
-    GRATIA_CONFIG_PATH=/etc/kapel-gratia-output/gratia-config
-    GRATIA_REPORTER=osgpilot_meter
-    GRATIA_SERVICE=OSGPilotContainer
-    GRATIA_PROBE_MANAGER=condor
-    GRATIA_PROBE_VERSION=2.8.4-1.osg.el8.b2e780f
+    GRATIA_CONFIG_PATH: "/etc/kapel-gratia-output/gratia-config"
+    GRATIA_REPORTER: "osgpilot_meter"
+    GRATIA_SERVICE: "OSGPilotContainer"
+    GRATIA_PROBE_MANAGER: "condor"
+    GRATIA_PROBE_VERSION: "2.8.4-1.osg.el8.b2e780f"
 
 
 nameOverride: ""
