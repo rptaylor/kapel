@@ -28,7 +28,7 @@ spec:
           securityContext:
             runAsNonRoot: true
           volumes:
-            {{ if eq .Values.output-format "ssmsend" }}
+            {{ if eq .Values.output_format "ssmsend" }}
             - name: ssmsend-config-volume
               configMap:
                 name: {{ .Release.Name }}-ssmsend-config
@@ -81,7 +81,7 @@ spec:
                 - name: manual-records
                   mountPath: /srv/manual
           containers:
-          {{ if eq .Values.output-format "gratia" }}
+          {{ if eq .Values.output_format "gratia" }}
             - name: gratia-output
               image: {{ .Values.gratia.image_repository}}:{{ .Values.gratia.image_tag | default .Chart.AppVersion }}
               resources:

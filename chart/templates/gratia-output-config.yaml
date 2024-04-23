@@ -1,4 +1,4 @@
-{{ if eq .Values.output-format "gratia" }}
+{{ if eq .Values.output_format "gratia" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

@@ -12,7 +12,7 @@ gridSecurityHostPath: true
 pspName: ""
 
 # "ssmsend" or "gratia"
-output-format: ssmsend
+output_format: ssmsend
 
 processor:
   resources:
