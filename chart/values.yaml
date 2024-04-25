@@ -17,6 +17,7 @@ output_format: ssmsend
 processor:
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-processor"
   image_tag: "latest"
+  image_pull_policy: "IfNotPresent"
   resources:
     # very generous estimate: approx 10 KiB memory per job record
     limits:
