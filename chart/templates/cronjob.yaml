@@ -17,6 +17,9 @@ spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       backoffLimit: 2
       template:
+        metadata:
+          labels:
+            app: kapel
         spec:
           {{- if .Values.cronjob.priorityClassName }}
           priorityClassName: {{ .Values.cronjob.priorityClassName }}
@@ -25,8 +28,8 @@ spec:
           activeDeadlineSeconds: 14400
           # If a container fails, fail the pod (job controller will make a fresh new pod)
           restartPolicy: Never
-          securityContext:
-            runAsNonRoot: true
+          # securityContext:
+          #  runAsNonRoot: true
           volumes:
             {{ if eq .Values.output_format "ssmsend" }}
             - name: ssmsend-config-volume
@@ -54,11 +57,9 @@ spec:
                 name: {{ .Release.Name }}-manual-records
           initContainers:
             - name: processor
-              image: library/python:3
+              image: {{ .Values.processor.image_repository }}:{{ .Values.processor.image_tag | default .Chart.AppVersion }}
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
-              command: ["/bin/bash"]
-              args: ["-c", "mkdir $HOME; git -C $HOME clone -b {{ .Values.processor.deploy_branch }} https://github.com/rptaylor/kapel.git; cd ~/kapel/python; pip install -r requirements.txt; python KAPEL.py"]
               env:
                 # for pip installation
                 - name: HOME
