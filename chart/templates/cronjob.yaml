@@ -41,10 +41,10 @@ spec:
                 path: /cvmfs/grid.cern.ch/etc/grid-security/certificates/
                 type: Directory
             {{ end }}
-            - name: apel-data-volume
+            - name: data-volume
               emptyDir:
                 sizeLimit: 1000M
-            - name: apel-run-volume
+            - name: run-volume
               emptyDir:
                 sizeLimit: 50M
             - name: manual-records
@@ -74,7 +74,7 @@ spec:
                 - configMapRef:
                     name: {{ .Release.Name }}-processor-config
               volumeMounts:
-                - name: apel-data-volume
+                - name: data-volume
                   mountPath: /srv/kapel
                 - name: manual-records
                   mountPath: /srv/manual
@@ -105,7 +105,7 @@ spec:
                   mountPath: /etc/grid-security/certificates
                   readOnly: true
                 {{ end }}
-                - name: apel-data-volume
+                - name: data-volume
                   mountPath: /var/spool/apel/outgoing
-                - name: apel-run-volume
+                - name: run-volume
                   mountPath: /var/run/apel
