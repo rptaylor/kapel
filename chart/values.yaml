@@ -36,6 +36,10 @@ processor:
     #VO_NAME: "atlas"
   # name of git branch to use
   deploy_branch: "prod"
+  # Authentication secret for Prometheus, if any
+  prometheus_auth:
+    secret: null
+    key: null
 
 
 ssmsend:
