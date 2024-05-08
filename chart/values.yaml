@@ -11,8 +11,11 @@ gridSecurityHostPath: true
 # Other than that no special privileges are required so a default PSP should be sufficient.
 pspName: ""
 
+# Corresponds to securityContext.runAsNonRoot
+runAsNonRoot: true
+
 # "ssmsend" or "gratia"
-output_format: ssmsend
+outputFormat: ssmsend
 
 processor:
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-processor"
@@ -79,7 +82,6 @@ gratia:
     GRATIA_REPORTER: "osgpilot_meter"
     GRATIA_SERVICE: "OSGPilotContainer"
     GRATIA_PROBE_MANAGER: "condor"
-    GRATIA_PROBE_VERSION: "2.8.4-1.osg.el8.b2e780f"
 
 
 nameOverride: ""
