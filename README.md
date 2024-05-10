@@ -1,19 +1,19 @@
 # KAPEL 
-KAPEL is container-native APEL accounting for Kubernetes.
+KAPEL is container-native Kubernetes accounting, for APEL and Gratia.
 - Lightweight and stateless (data storage is handled by Prometheus).
 - Supports two publishing modes:
-  - 'auto' mode to publish the current month and previous month.
-  - 'gap' mode to (re)publish an arbitrary fixed time period.
+  - "auto" mode to publish the current month and previous month.
+  - "gap" mode to (re)publish an arbitrary fixed time period.
 - Supports two data source modes:
   - Normally, pod data is retrieved from Prometheus.
   - For manual corrections, you can supply the accounting data to be published yourself.
 - Supports two data outlets:
-  - "ssmsend" publishes records to APEL via ssmsend
-  - "gratia" publishes records to [GRACC](https://gracc.opensciencegrid.org/) via 
-    [Gratia](https://github.com/opensciencegrid/gratia-probe/)
+  - "ssmsend" mode to publish records to [APEL](https://apel.github.io/) via [SSM](https://github.com/apel/ssm).
+  - "gratia" mode to publish records to [GRACC](https://gracc.opensciencegrid.org/) via
+    [Gratia](https://github.com/opensciencegrid/gratia-probe/).
 
 ## Requirements
-- X509 certificate and key for publishing APEL records with ssmsend
+- For ssmsend mode: X509 certificate and key to publish APEL records
   - Note: ssmsend only uses the certificate for content signing, not TLS, so the DN of the certificate does not need to match any host name.
     It only needs to match the "Host DN" field in GOCDB for the gLite-APEL service.
 - kube-state-metrics and Prometheus (installing both via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
