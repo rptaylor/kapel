@@ -48,7 +48,7 @@ spec:
             {{ end }}
             - name: data-volume
               emptyDir:
-                sizeLimit: 1000M
+                sizeLimit: {{ .Values.dataVolumeSize }}
             - name: run-volume
               emptyDir:
                 sizeLimit: 50M

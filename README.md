@@ -7,6 +7,10 @@ KAPEL is container-native APEL accounting for Kubernetes.
 - Supports two data source modes:
   - Normally, pod data is retrieved from Prometheus.
   - For manual corrections, you can supply the accounting data to be published yourself.
+- Supports two data outlets:
+  - "ssmsend" publishes records to APEL via ssmsend
+  - "gratia" publishes records to [GRACC](https://gracc.opensciencegrid.org/) via 
+    [Gratia](https://github.com/opensciencegrid/gratia-probe/)
 
 ## Requirements
 - X509 certificate and key for publishing APEL records with ssmsend
@@ -23,6 +27,8 @@ KAPEL is container-native APEL accounting for Kubernetes.
   - For large production deployments (examples are based on a cluster with about 125 nodes and 7000 cores):
     - Increase `.Values.prometheus.querySpec.timeout` (e.g. ~ 1800s) to allow long queries to succeed.
     - Apply sufficient CPU and memory resource requests and limits.
+  - If Prometheus is configured to require authentication, configure `.Values.processor.prometheus_auth` to specify an appropriate kubernetes
+    secret containing authentication information.
 
 Pods must specify CPU resource requests in order to be accounted. All pods in a specified namespace will be accounted.
 To do accounting for different projects in multiple namespaces, a KAPEL chart can be installed and configured for each one.
@@ -34,3 +40,5 @@ To do accounting for different projects in multiple namespaces, a KAPEL chart ca
 
 ## Helm chart installation
 The KAPEL Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
+
+See the [Helm Chart README](chart/README.md) for additional information.
