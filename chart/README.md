@@ -13,7 +13,7 @@ Then [install](https://helm.sh/docs/helm/helm_install/) it:
 
     helm install kuantifier oci://hub.opensciencegrid.org/iris-hep/kuantifier --version <latest-version> --values my-values.yaml
 
-Or [upgrade] an existing installation with a new Helm chart version or set of configuration values:
+Or [upgrade](https://helm.sh/docs/helm/helm_upgrade/) an existing installation with a new helm chart version or set of configuration values:
 
     helm upgrade kuantifier oci://hub.opensciencegrid.org/iris-hep/kuantifier --version <latest-version> --values my-values.yaml
 
@@ -53,7 +53,7 @@ below.
    the processor container. Allow approximately 10KB of memory per job record being processed.
   * `.config`: Environment variables for the processor. See [KAPELConfig.py](../python/KAPELConfig.py) for full details. 
   Must specify at least the following:
-    * `NAMESPACE`: The namespace in which pilot job containers are run. Kuantifier assumes every pod in the namespace is a pilot job.
+    * `NAMESPACE`: The namespace in which pods that execute jobs are run. Kuantifier assumes every pod in the namespace executes jobs.
     * `SITE_NAME`: The name of the site being reported on.
     * `SUBMIT_HOST`: Uniquely identifying name for the cluster.
     * `VO_NAME`: VO of jobs.
