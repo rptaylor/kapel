@@ -39,7 +39,7 @@ below.
   * `.ttlSecondsAfterFinished`: Duration to persist completed pods after completion. 
 * `.Values.pspName`: If specified, a [Pod Security Policy](https://kubernetes.io/docs/concepts/security/pod-security-policy/).
     name to use. Deprecated in newer versions of Kubernetes.
-* `.Values.runAsNonRoot`: If true, run the pod as a [non-root user](https://kubernetes.io/docs/concepts/security/pod-security-standards/).
+* `.Values.user`: For newer versions of Kubernetes, set the non-privileged [user id and group id](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
 
 * `.Values.dataVolumeSize`: The size of the volume where Kuantifier stores its intermediate results between querying Prometheus
   and outputting to an external service. Note that Gratia output may require a significantly larger data volume size, as it operates

@@ -29,7 +29,9 @@ spec:
           # If a container fails, fail the pod (job controller will make a fresh new pod)
           restartPolicy: Never
           securityContext:
-            runAsNonRoot: {{ .Values.runAsNonRoot }}
+            runAsNonRoot: true
+            runAsUser: {{ .Values.serviceUser.uid }}
+            runAsGroup: {{ .Values.serviceUser.gid }}
           volumes:
             {{ if eq .Values.outputFormat "ssmsend" }}
             - name: ssmsend-config-volume

@@ -15,8 +15,10 @@ gridSecurityHostPath: true
 # Other than that no special privileges are required so a default PSP should be sufficient.
 pspName: ""
 
-# Corresponds to securityContext.runAsNonRoot
-runAsNonRoot: true
+# UID and GID for the pod service user
+serviceUser:
+  uid: 10000
+  gid: 10000
 
 # Size of the data volume in which to store intermediate APEL records. outputFormat "gratia"
 # outputs individual records rather than summaries, and may require a larger data volume size.
