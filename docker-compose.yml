@@ -1,0 +1,6 @@
+services:
+  kapel-processor:
+    image: hub.opensciencegrid.org/osgpreview/kapel-processor:latest
+    build:
+      context: .
+      network: host
