@@ -33,13 +33,13 @@ below.
     [Gratia](https://github.com/opensciencegrid/gratia-probe/).
 * `.Values.cronjob`: Configuration for the Kubernetes [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/)
   object that periodically runs Kuantifier.
-  * `.schedule`: Cron expression for scheduling the CronJob
+  * `.schedule`: Cron expression for scheduling the CronJob.
   * `.priorityClassName`: [Priority Class](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/) for the
     pods that run the Kuantifier job.
   * `.ttlSecondsAfterFinished`: Duration to persist completed pods after completion. 
-* `.Values.pspName`: If specified, a [Pod Security Policy](https://kubernetes.io/docs/concepts/security/pod-security-policy/).
+* `.Values.pspName`: If specified, a [Pod Security Policy](https://kubernetes.io/docs/concepts/security/pod-security-policy/)
     name to use. Deprecated in newer versions of Kubernetes.
-* `.Values.user`: For newer versions of Kubernetes, set the non-privileged [user id and group id](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
+* `.Values.user`: Can be used to change the [user id and group id](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) the pod runs as if needed.
 
 * `.Values.dataVolumeSize`: The size of the volume where Kuantifier stores its intermediate results between querying Prometheus
   and outputting to an external service. Note that Gratia output may require a significantly larger data volume size, as it operates
@@ -53,8 +53,8 @@ below.
    the processor container. Allow approximately 10KB of memory per job record being processed.
   * `.config`: Environment variables for the processor. See [KAPELConfig.py](../python/KAPELConfig.py) for full details. 
   Must specify at least the following:
-    * `NAMESPACE`: The namespace in which pods that execute jobs are run. Kuantifier assumes every pod in the namespace executes jobs.
-    * `SITE_NAME`: The name of the site being reported on.
+    * `NAMESPACE`: The namespace of the pods for which Kuantifier will collect and report metrics.
+    * `SITE_NAME`: The name of the site being reported.
     * `SUBMIT_HOST`: Uniquely identifying name for the cluster.
     * `VO_NAME`: VO of jobs.
     * `BENCHMARK_VALUE`: The value to use for normalizing to CPU performance - for APEL accounting.
@@ -66,7 +66,7 @@ below.
 The following values only apply if `.Values.outputFormat` equals `"gratia"`:
 
 * `.Values.gratia`: Configuration for the container that outputs job records to GRACC.
-  * `.image_repository`: Docker image repository from which to pull the Gratia output image.
+  * `.image_repository`: OCI image repository from which to pull the Gratia output image.
   * `.image_tag`: Optionally specify an image version.
   * `.resources`: Resource requests and limits for the Gratia output container.
   * `.config`: Environment variables for the Gratia output container. Currently, it is strongly recommended to use the default.
@@ -76,7 +76,7 @@ The following values only apply if `.Values.outputFormat` equals `"gratia"`:
 The following values only apply if `.Values.outputFormat` equals `"ssmsend"`:
 
 * `.Values.ssmsend`: Configuration for the container that outputs job records to APEL.
-  * `.image_repository`: Docker image repository from which to pull the SSM output image.
+  * `.image_repository`: OCI image repository from which to pull the SSM output image.
   * `.image_tag`: Optionally specify an image version.
   * `.resources`: Resource requests and limits for the SSM output container.
-  * `.x509cert` and `.x509key`: Base64-encoded public cert and private key to authenticate to APEL.
+  * `.x509cert` and `.x509key`: Base64-encoded public cert and private key for content signing when sending messages with SSM for APEL.
