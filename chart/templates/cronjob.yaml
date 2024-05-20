@@ -63,6 +63,9 @@ spec:
             - name: processor
               image: {{ .Values.processor.image_repository }}:{{ .Values.processor.image_tag | default .Chart.AppVersion }}
               imagePullPolicy: {{ .Values.processor.image_pull_policy }}
+              workingDir: /src
+              command: [ "python3" ]
+              args: [ "KAPEL.py" ]
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
               env:
@@ -102,6 +105,9 @@ spec:
           {{ if eq .Values.outputFormat "gratia" }}
             - name: gratia-output
               image: {{ .Values.gratia.image_repository}}:{{ .Values.gratia.image_tag | default .Chart.AppVersion }}
+              workingDir: /gratia
+              command: [ "python3" ]
+              args: [ "kubernetes_meter.py" ]
               resources:
                 {{- toYaml .Values.gratia.resources | nindent 16 }}
               envFrom:

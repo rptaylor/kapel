@@ -26,7 +26,8 @@ dataVolumeSize: 1000M
 
 processor:
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-processor"
-  image_tag: "latest"
+  # Optionally overwrite container version. Default is chart appVersion.
+  image_tag: ""
   image_pull_policy: "IfNotPresent"
   resources:
     # very generous estimate: approx 10 KiB memory per job record
@@ -82,7 +83,7 @@ gratia:
   # Location of gratia output container.
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-gratia-output"
   # Optionally overwrite container version. Default is chart appVersion.
-  image_tag: "latest"
+  image_tag: ""
   # Config options for Gratia. At present, only GRATIA_CONFIG_PATH can be specified,
   # And points to the default Gratia config file.
   config: |
