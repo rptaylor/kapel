@@ -1,3 +1,4 @@
+{{ if eq .Values.outputFormat "gratia" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,3 +7,4 @@ metadata:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
 {{ .Values.gratia.config | indent 2 }}
+{{ end }}
