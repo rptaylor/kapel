@@ -46,7 +46,7 @@ below.
   on non-summarized records.
 
 * `.Values.processor`: Configuration for the container that queries Prometheus to generate Job metric records.
-  * `.image_repository`: Docker image repository from which to pull the processor image.
+  * `.image_repository`: OCI image repository from which to pull the processor image.
   * `.image_tag`: Optionally specify an image version.
   * `.image_pull_policy`: [Image Pull Policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) for the processor container.
   * `.resources`: [Resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for
