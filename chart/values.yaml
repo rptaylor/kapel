@@ -3,6 +3,10 @@ cronjob:
   priorityClassName: ""
   ttlSecondsAfterFinished: 7776000
 
+# "ssmsend" or "gratia"
+outputFormat: ssmsend
+
+
 # If true, /cvmfs/grid.cern.ch/etc/grid-security/certificates/ will be mounted as a hostPath volume.
 # If false, you will need to set up an alternative way of providing the ca-policy-* packages and CRLs in the ssmsend container.
 gridSecurityHostPath: true
@@ -11,7 +15,20 @@ gridSecurityHostPath: true
 # Other than that no special privileges are required so a default PSP should be sufficient.
 pspName: ""
 
+# UID and GID for the pod service user
+user:
+  uid: 10000
+  gid: 10000
+
+# Size of the data volume in which to store intermediate APEL records. outputFormat "gratia"
+# outputs individual records rather than summaries, and may require a larger data volume size.
+dataVolumeSize: 1000M
+
 processor:
+  image_repository: "hub.opensciencegrid.org/osgpreview/kapel-processor"
+  # Optionally overwrite container version. Default is chart appVersion.
+  image_tag: ""
+  image_pull_policy: "IfNotPresent"
   resources:
     # very generous estimate: approx 10 KiB memory per job record
     limits:
@@ -28,8 +45,12 @@ processor:
     #BENCHMARK_VALUE: "15.0"
     #NAMESPACE: "harvester"
     #VO_NAME: "atlas"
-  # name of git branch to use
-  deploy_branch: "prod"
+
+  # Authentication secret for Prometheus, if any
+  prometheus_auth:
+    secret: null
+    key: null
+
 
 ssmsend:
   resources:
@@ -50,6 +71,24 @@ ssmsend:
   # Using a base64 encoded string with no line breaks avoids issues of indentation and double YAML encoding if Ansible is used for Helm.
   x509cert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgY2VydCBmb3IgQVBFTCBwdWJsaXNoZXIK
   x509key: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGtleSBmb3IgQVBFTCBwdWJsaXNoZXIK
+
+gratia:
+  resources:
+    limits:
+      cpu: "0.5"
+      memory: "500Mi"
+    requests:
+      cpu: "0.1"
+      memory: "50Mi"
+  # Location of gratia output container.
+  image_repository: "hub.opensciencegrid.org/osgpreview/kapel-gratia-output"
+  # Optionally overwrite container version. Default is chart appVersion.
+  image_tag: ""
+  # Config options for Gratia. At present, only GRATIA_CONFIG_PATH can be specified,
+  # And points to the default Gratia config file.
+  config: |
+    GRATIA_CONFIG_PATH: "/etc/gratia/kubernetes/ProbeConfig"
+
 
 nameOverride: ""
 fullnameOverride: ""

@@ -1,15 +1,19 @@
 # KAPEL 
-KAPEL is container-native APEL accounting for Kubernetes.
+KAPEL is container-native Kubernetes accounting, for APEL and Gratia.
 - Lightweight and stateless (data storage is handled by Prometheus).
 - Supports two publishing modes:
-  - 'auto' mode to publish the current month and previous month.
-  - 'gap' mode to (re)publish an arbitrary fixed time period.
+  - "auto" mode to publish the current month and previous month.
+  - "gap" mode to (re)publish an arbitrary fixed time period.
 - Supports two data source modes:
   - Normally, pod data is retrieved from Prometheus.
   - For manual corrections, you can supply the accounting data to be published yourself.
+- Supports two data outlets:
+  - "ssmsend" mode to publish records to [APEL](https://apel.github.io/) via [SSM](https://github.com/apel/ssm).
+  - "gratia" mode to publish records to [GRACC](https://gracc.opensciencegrid.org/) via
+    [Gratia](https://github.com/opensciencegrid/gratia-probe/).
 
 ## Requirements
-- X509 certificate and key for publishing APEL records with ssmsend
+- For ssmsend mode: X509 certificate and key to publish APEL records
   - Note: ssmsend only uses the certificate for content signing, not TLS, so the DN of the certificate does not need to match any host name.
     It only needs to match the "Host DN" field in GOCDB for the gLite-APEL service.
 - kube-state-metrics and Prometheus (installing both via [bitnami/kube-prometheus](https://bitnami.com/stack/prometheus-operator/helm) is recommended)
@@ -24,7 +28,8 @@ KAPEL is container-native APEL accounting for Kubernetes.
     - Increase `.Values.prometheus.querySpec.timeout` (e.g. ~ 1800s) to allow long queries to succeed.
     - Apply sufficient CPU and memory resource requests and limits.
 
-Pods must specify CPU resource requests in order to be accounted. All pods in a specified namespace will be accounted.
+In order to be accounted, pods must specify CPU resource requests, and remain registered in Completed state on the cluster for a period of time when they finish.
+All pods in a specified namespace will be accounted.
 To do accounting for different projects in multiple namespaces, a KAPEL chart can be installed and configured for each one.
 
 ## Configuration
@@ -34,3 +39,5 @@ To do accounting for different projects in multiple namespaces, a KAPEL chart ca
 
 ## Helm chart installation
 The KAPEL Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
+
+See the [Helm Chart README](chart/README.md) for additional information.

@@ -17,6 +17,9 @@ spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       backoffLimit: 2
       template:
+        metadata:
+          labels:
+            app: kapel
         spec:
           {{- if .Values.cronjob.priorityClassName }}
           priorityClassName: {{ .Values.cronjob.priorityClassName }}
@@ -27,7 +30,12 @@ spec:
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
+            {{ if .Values.user.uid }}
+            runAsUser: {{ .Values.user.uid }}
+            runAsGroup: {{ .Values.user.gid }}
+            {{ end }}
           volumes:
+            {{ if eq .Values.outputFormat "ssmsend" }}
             - name: ssmsend-config-volume
               configMap:
                 name: {{ .Release.Name }}-ssmsend-config
@@ -35,6 +43,7 @@ spec:
               secret:
                 secretName: {{ .Release.Name }}-ssmsend-secret
                 defaultMode: 0400
+            {{ end }}
             {{ if .Values.gridSecurityHostPath }}
             - name: grid-security-volume
               hostPath:
@@ -43,7 +52,7 @@ spec:
             {{ end }}
             - name: data-volume
               emptyDir:
-                sizeLimit: 1000M
+                sizeLimit: {{ .Values.dataVolumeSize }}
             - name: run-volume
               emptyDir:
                 sizeLimit: 50M
@@ -52,11 +61,13 @@ spec:
                 name: {{ .Release.Name }}-manual-records
           initContainers:
             - name: processor
-              image: library/python:3
+              image: {{ .Values.processor.image_repository }}:{{ .Values.processor.image_tag | default .Chart.AppVersion }}
+              imagePullPolicy: {{ .Values.processor.image_pull_policy }}
+              workingDir: /src
+              command: [ "python3" ]
+              args: [ "KAPEL.py" ]
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
-              command: ["/bin/bash"]
-              args: ["-c", "mkdir $HOME; git -C $HOME clone -b {{ .Values.processor.deploy_branch }} https://github.com/rptaylor/kapel.git; cd ~/kapel/python; pip install -r requirements.txt; python KAPEL.py"]
               env:
                 # for pip installation
                 - name: HOME
@@ -70,6 +81,18 @@ spec:
                 # to see log output immediately
                 - name: PYTHONUNBUFFERED
                   value: "TRUE"
+                {{ if eq .Values.outputFormat "gratia" }}
+                # Gratia needs individual job records rather than summaries
+                - name: SUMMARIZE_RECORDS
+                  value: "False"
+                {{ end }}
+                {{ if .Values.processor.prometheus_auth.secret }}
+                - name: PROMETHEUS_AUTH_HEADER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.processor.prometheus_auth.secret }}
+                      key: {{ .Values.processor.prometheus_auth.key }}
+                {{ end }}
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-processor-config
@@ -79,6 +102,21 @@ spec:
                 - name: manual-records
                   mountPath: /srv/manual
           containers:
+          {{ if eq .Values.outputFormat "gratia" }}
+            - name: gratia-output
+              image: {{ .Values.gratia.image_repository}}:{{ .Values.gratia.image_tag | default .Chart.AppVersion }}
+              workingDir: /gratia
+              command: [ "python3" ]
+              args: [ "kubernetes_meter.py" ]
+              resources:
+                {{- toYaml .Values.gratia.resources | nindent 16 }}
+              envFrom:
+                - configMapRef:
+                    name: {{ .Release.Name }}-gratia-output-config
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /srv/kapel
+          {{ else }}
             - name: ssmsend
               image: {{ .Values.ssmsend.image_repository }}:{{ .Values.ssmsend.image_tag | default .Chart.AppVersion }}
               resources:
@@ -109,3 +147,4 @@ spec:
                   mountPath: /var/spool/apel/outgoing
                 - name: run-volume
                   mountPath: /var/run/apel
+          {{ end }}
