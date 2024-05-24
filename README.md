@@ -30,7 +30,8 @@ KAPEL is container-native Kubernetes accounting, for APEL and Gratia.
   - If Prometheus is configured to require authentication, configure `.Values.processor.prometheus_auth` to specify an appropriate kubernetes
     secret containing authentication information.
 
-Pods must specify CPU resource requests in order to be accounted. All pods in a specified namespace will be accounted.
+In order to be accounted, pods must specify CPU resource requests, and remain registered in Completed state on the cluster for a period of time when they finish.
+All pods in a specified namespace will be accounted.
 To do accounting for different projects in multiple namespaces, a KAPEL chart can be installed and configured for each one.
 
 ## Configuration

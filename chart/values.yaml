@@ -16,7 +16,7 @@ gridSecurityHostPath: true
 pspName: ""
 
 # UID and GID for the pod service user
-serviceUser:
+user:
   uid: 10000
   gid: 10000
 

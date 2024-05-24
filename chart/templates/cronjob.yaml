@@ -30,9 +30,9 @@ spec:
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
-            {{ if .Values.serviceUser.uid }}
-            runAsUser: {{ .Values.serviceUser.uid }}
-            runAsGroup: {{ .Values.serviceUser.gid }}
+            {{ if .Values.user.uid }}
+            runAsUser: {{ .Values.user.uid }}
+            runAsGroup: {{ .Values.user.gid }}
             {{ end }}
           volumes:
             {{ if eq .Values.outputFormat "ssmsend" }}
