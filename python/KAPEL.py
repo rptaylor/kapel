@@ -83,6 +83,7 @@ def summary_message(config, year, month, wall_time, cpu_time, n_jobs, first_end,
     return output
 
 def individual_message(config, pod_name, memory, cores, wall_time, cpu_time, start_time, end_time):
+    """ Write an APEL individual job message based on prometheus metrics from a single pod """
     output = (
         f'APEL-individual-job-message: v0.3\n'
         f'Site: {config.site_name}\n'
@@ -91,8 +92,6 @@ def individual_message(config, pod_name, memory, cores, wall_time, cpu_time, sta
         f'MachineName: {pod_name}\n'
         f'LocalJobId: {pod_name}\n'
         f'InfrastructureType: {config.infrastructure_type}\n'
-        #f'InfrastructureDescription: {config.infrastructure_description}\n'
-        # si2k = HS06 * 250
         f'ServiceLevelType: si2k\n'
         f'ServiceLevel: {config.benchmark_value * 250}\n'
         f'WallDuration: {wall_time}\n'
@@ -285,7 +284,7 @@ def record_individual_period(config, results):
             records['starttime'],
             records['endtime'])
         record_file = dirq.add(individual_output)
-        print(f'Writing summary record to {config.output_path}/{record_file}:')
+        print(f'Writing individual record to {config.output_path}/{record_file}:')
         print('--------------------------------\n' + individual_output + '--------------------------------')
     
 
