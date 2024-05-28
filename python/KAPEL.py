@@ -52,8 +52,16 @@ class QueryLogic:
         # (which takes a range and returns a scalar), and as a result get the whole metric set. Finally, use group_left for many-to-one matching.
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
-        self.cputime = f'max_over_time(container_cpu_usage_seconds_total{{namespace="{namespace}"}}[{queryRange}])'
-        self.memory = f'max_over_time(container_memory_working_set_bytes{{namespace="{namespace}"}}[{queryRange}]) / 1000'
+        self.cputime = f'(max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}]) - max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])) * on (pod) group_left() max without (instance, node) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}]))'
+
+        # 'container' level metrics will always report multiple records per pod due to the "pause" container
+        # that's created on pod initialization: https://kubernetes.io/docs/concepts/windows/intro/#pause-container
+        # To prevent double counting the pause container, only take the highest cpu time/memory usage per pod
+        self.memory = f'max by (pod) (max_over_time(container_memory_working_set_bytes{{namespace="{namespace}"}}[{queryRange}])) / 1000'
+        # For gratia output, the container_cpu_usage_seconds_total metric better aligns with cpu usage 
+        # than kube_pod_start_time - kube_pod_completion_time
+        self.cpuusage = f'max by (pod) (max_over_time(container_cpu_usage_seconds_total{{namespace="{namespace}"}}[{queryRange}]))'
+
         self.endtime = f'max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}])'
@@ -280,7 +288,7 @@ def record_individual_period(config, results):
             records.get('memory', 0),
             records.get('cores', 0),
             records['endtime'] - records['starttime'],
-            records.get('cputime', 0),
+            records.get('cpuusage', 0),
             records['starttime'],
             records['endtime'])
         record_file = dirq.add(individual_output)
