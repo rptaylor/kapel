@@ -27,8 +27,6 @@ KAPEL is container-native Kubernetes accounting, for APEL and Gratia.
   - For large production deployments (examples are based on a cluster with about 125 nodes and 7000 cores):
     - Increase `.Values.prometheus.querySpec.timeout` (e.g. ~ 1800s) to allow long queries to succeed.
     - Apply sufficient CPU and memory resource requests and limits.
-  - If Prometheus is configured to require authentication, configure `.Values.processor.prometheus_auth` to specify an appropriate kubernetes
-    secret containing authentication information.
 
 In order to be accounted, pods must specify CPU resource requests, and remain registered in Completed state on the cluster for a period of time when they finish.
 All pods in a specified namespace will be accounted.
