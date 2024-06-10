@@ -54,13 +54,10 @@ class QueryLogic:
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
         self.cputime = f'(max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}]) - max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])) * on (pod) group_left() max without (instance, node) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}]))'
 
-        # 'container' level metrics will always report multiple records per pod due to the "pause" container
-        # that's created on pod initialization: https://kubernetes.io/docs/concepts/windows/intro/#pause-container
-        # To prevent double counting the pause container, only take the highest cpu time/memory usage per pod
+        # These are container-level memory and CPU usage metrics reported by kubelets.
         self.memory = f'sum by (pod) (max_over_time(container_memory_working_set_bytes{{namespace="{namespace}"}}[{queryRange}])) / 1000'
-        # For gratia output, the container_cpu_usage_seconds_total metric better aligns with cpu usage 
-        # than kube_pod_start_time - kube_pod_completion_time
-        self.cpuusage = f'sum by (pod) (max_over_time(container_cpu_usage_seconds_total{{namespace="{namespace}"}}[{queryRange}]))'
+        # For gratia output, take the largest (i.e. final) value of the cumulative CPU usage of each container, and sum the results for all containers in a pod.
+        self.cpuusage = f'sum by (pod) (last_over_time(container_cpu_usage_seconds_total{{namespace="{namespace}"}}[{queryRange}]))'
 
         self.endtime = f'max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])'
