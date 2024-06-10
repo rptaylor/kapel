@@ -57,10 +57,10 @@ class QueryLogic:
         # 'container' level metrics will always report multiple records per pod due to the "pause" container
         # that's created on pod initialization: https://kubernetes.io/docs/concepts/windows/intro/#pause-container
         # To prevent double counting the pause container, only take the highest cpu time/memory usage per pod
-        self.memory = f'max by (pod) (max_over_time(container_memory_working_set_bytes{{namespace="{namespace}"}}[{queryRange}])) / 1000'
+        self.memory = f'sum by (pod) (max_over_time(container_memory_working_set_bytes{{namespace="{namespace}"}}[{queryRange}])) / 1000'
         # For gratia output, the container_cpu_usage_seconds_total metric better aligns with cpu usage 
         # than kube_pod_start_time - kube_pod_completion_time
-        self.cpuusage = f'max by (pod) (max_over_time(container_cpu_usage_seconds_total{{namespace="{namespace}"}}[{queryRange}]))'
+        self.cpuusage = f'sum by (pod) (max_over_time(container_cpu_usage_seconds_total{{namespace="{namespace}"}}[{queryRange}]))'
 
         self.endtime = f'max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])'
