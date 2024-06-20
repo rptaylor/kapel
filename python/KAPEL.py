@@ -195,7 +195,7 @@ def record_summarized_period(config, period_start, year, month, results):
     endtime = results['endtime']
     starttime = results['starttime']
     cores = results['cores']
-    result_lengths = max(len(l) for l in results.values())
+    result_lengths = list((len(l) for l in results.values()))
     # Confirm the assumption that cputime should have the fewest entries, while starttime and cores may have additional ones
     # corresponding to jobs that have started but not finished yet, and endtime may have additional ones if there are pods without CPU resource requests.
     # We only want the jobs for which all values are available: start time, end time, CPU request.
