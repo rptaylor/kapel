@@ -74,5 +74,3 @@ class KAPELConfig:
         # set a default of 0 here but see https://github.com/apel/apel/issues/241
         self.nodecount = env.int("NODECOUNT", 0)
         self.processors = env.int("PROCESSORS", 0)
-
-

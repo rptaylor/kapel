@@ -53,7 +53,6 @@ class QueryLogic:
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
         # https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches
         self.cputime = f'(max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}]) - max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])) * on (pod) group_left() max without (instance, node) (max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}]))'
-
         self.endtime = f'max_over_time(kube_pod_completion_time{{namespace="{namespace}"}}[{queryRange}])'
         self.starttime = f'max_over_time(kube_pod_start_time{{namespace="{namespace}"}}[{queryRange}])'
         self.cores = f'max_over_time(kube_pod_container_resource_requests{{resource="cpu", node != "", namespace="{namespace}"}}[{queryRange}])'
@@ -263,8 +262,8 @@ def record_summarized_period(config, period_start, year, month, results):
     print('--------------------------------\n' + sync_output + '--------------------------------')
 
 def record_individual_period(config, results):
-    """ Record a record for each pod in the namespace over the summarized period.
-    Assumes each pod ran a single job and terminated upon job completion.
+    """ Record each pod in the namespace over the summarized period.
+    Assumes each pod ran once and terminated upon completion.
     """
     # Pivot records from {'data_type':{'pod_name':value}} to {'pod_name':{'data_type':value}}
     per_pod_records = {}
