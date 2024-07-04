@@ -194,7 +194,6 @@ def record_summarized_period(config, period_start, year, month, results):
     endtime = results['endtime']
     starttime = results['starttime']
     cores = results['cores']
-    result_lengths = list((len(l) for l in results.values()))
     # Note that jobs which started last month and finished this month will be properly included and accounted in this month.
     # However, jobs that finished last month may show up in this month's data if they are still present on the cluster this month (in Completed state).
     # Exclude them by filtering with a lambda (since you can't pass an argument to a function object AFAIK).
