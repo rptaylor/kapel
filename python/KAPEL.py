@@ -195,15 +195,11 @@ def record_summarized_period(config, period_start, year, month, results):
     starttime = results['starttime']
     cores = results['cores']
     result_lengths = list((len(l) for l in results.values()))
-    # Confirm the assumption that cputime should have the fewest entries, while starttime and cores may have additional ones
-    # corresponding to jobs that have started but not finished yet, and endtime may have additional ones if there are pods without CPU resource requests.
-    # We only want the jobs for which all values are available: start time, end time, CPU request.
     # Note that jobs which started last month and finished this month will be properly included and accounted in this month.
-    assert len(cputime) == min(result_lengths), "cputime should be the shortest list"
     # However, jobs that finished last month may show up in this month's data if they are still present on the cluster this month (in Completed state).
     # Exclude them by filtering with a lambda (since you can't pass an argument to a function object AFAIK).
     endtime = dict(filter(lambda x: x[1] >= datetime.datetime.timestamp(period_start), endtime.items()))
-    # Prepare to iterate over jobs which meet all criteria.
+    # Prepare to iterate over jobs which meet all criteria: the cputime result exists, so there must be a valid start and end time, and core count.
     valid_jobs = cputime.keys() & endtime.keys()
     # avoid sending empty records
     if len(valid_jobs) == 0:
