@@ -38,7 +38,6 @@ processor:
       cpu: "0.5"
       memory: "500Mi"
   # See KAPELConfig.py for full details on required configuration.
-  # Along with SITE_NAME and SUBMIT_HOST, you will also need to define BENCHMARK_VALUE, NAMESPACE, and VO_NAME.
   config: |
     SITE_NAME: "EXAMPLE-T2"
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
