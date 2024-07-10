@@ -61,7 +61,7 @@ spec:
                 name: {{ .Release.Name }}-manual-records
           initContainers:
             - name: processor
-              image: {{ .Values.processor.image_repository }}:{{ .Values.processor.image_tag | default .Chart.AppVersion }}
+              image: {{ .Values.processor.image_repository }}:{{ .Values.processor.image_tag | default .Chart.Version }}
               imagePullPolicy: {{ .Values.processor.image_pull_policy }}
               workingDir: /src
               command: [ "python3" ]
