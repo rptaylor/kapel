@@ -57,7 +57,7 @@ below.
     * `SITE_NAME`: The name of the site being reported.
     * `SUBMIT_HOST`: Uniquely identifying name for the cluster.
     * `VO_NAME`: VO of jobs.
-    * `BENCHMARK_VALUE`: The value to use for normalizing to CPU performance - for APEL accounting.
+    * `BENCHMARK_VALUE`: The value to use for normalizing by CPU performance. Required for APEL accounting.
   * `.prometheus_auth`: If your Prometheus instance is configured to require [Authentication](https://prometheus.io/docs/prometheus/latest/configuration/https/)
     from within the cluster, specify a Secret containing a value for the authentication header.
  

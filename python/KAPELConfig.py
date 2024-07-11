@@ -1,6 +1,7 @@
 # Configuration module for KAPEL
 
 from environs import Env
+from environs import EnvError
 
 # Read config settings from environment variables (and a named env file in CWD if specified),
 # do input validation, and return a config object. Note, if a '.env' file exists in CWD it will be used by default.
@@ -61,7 +62,10 @@ class KAPELConfig:
         #self.benchmark_type = env.str("BENCHMARK_TYPE", "HEPSPEC")
 
         # Benchmark value
-        self.benchmark_value = env.float("BENCHMARK_VALUE")
+        try:
+            self.benchmark_value = env.float("BENCHMARK_VALUE")
+        except EnvError:
+            pass
 
         # VO of jobs
         self.vo_name = env.str("VO_NAME")

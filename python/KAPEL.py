@@ -87,7 +87,7 @@ def summary_message(config, year, month, wall_time, cpu_time, n_jobs, first_end,
     return output
 
 def individual_message(config, pod_name, memory, cores, wall_time, cpu_time, start_time, end_time):
-    """ Write an APEL individual job message based on prometheus metrics from a single pod """
+    """ Write an APEL individual job message based on prometheus metrics from a single pod, without benchmark values. """
     output = (
         f'APEL-individual-job-message: v0.3\n'
         f'Site: {config.site_name}\n'
@@ -96,8 +96,6 @@ def individual_message(config, pod_name, memory, cores, wall_time, cpu_time, sta
         f'MachineName: {pod_name}\n'
         f'LocalJobId: {pod_name}\n'
         f'InfrastructureType: {config.infrastructure_type}\n'
-        f'ServiceLevelType: si2k\n'
-        f'ServiceLevel: {config.benchmark_value * 250}\n'
         f'WallDuration: {wall_time}\n'
         f'CpuDuration: {cpu_time}\n'
         f'MemoryVirtual: {memory}\n'
