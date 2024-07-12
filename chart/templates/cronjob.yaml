@@ -32,7 +32,10 @@ spec:
             runAsNonRoot: true
             {{ if .Values.user.uid }}
             runAsUser: {{ .Values.user.uid }}
+            {{ end }}
+            {{ if .Values.user.gid }}
             runAsGroup: {{ .Values.user.gid }}
+            fsGroup: {{ .Values.user.gid }}
             {{ end }}
           volumes:
             {{ if eq .Values.outputFormat "ssmsend" }}
