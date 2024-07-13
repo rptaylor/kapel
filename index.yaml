@@ -3,7 +3,17 @@ entries:
   kapel:
   - apiVersion: v2
     appVersion: 3.3.1
-    created: "2024-07-10T17:00:04.232981049-07:00"
+    created: "2024-07-12T17:32:32.908602023-07:00"
+    description: APEL and Gratia accounting for Kubernetes
+    digest: 4070ea7f25178e7b37e6aab140029d5a111231d6979e478316ed10ef6ac00f2c
+    name: kapel
+    type: application
+    urls:
+    - kapel-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: 3.3.1
+    created: "2024-07-12T17:32:32.907858264-07:00"
     description: APEL and Gratia accounting for Kubernetes
     digest: 9bf1798bb29fb859f92f237620bc0bcb91268c8e9e6699e6bc5942ba94e51c06
     name: kapel
@@ -13,7 +23,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 3.3.1
-    created: "2024-07-10T17:00:04.23216207-07:00"
+    created: "2024-07-12T17:32:32.90712333-07:00"
     description: APEL accounting for Kubernetes
     digest: 436f4c373a0d988de5b71540a016405a507aff142e0dee353e467f803213a269
     name: kapel
@@ -23,7 +33,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: 3.3.1
-    created: "2024-07-10T17:00:04.231598827-07:00"
+    created: "2024-07-12T17:32:32.906621655-07:00"
     description: APEL accounting for Kubernetes
     digest: 3942ca9674372fed53e6022344c01efdd3c9672c08350480c74f066b8b987998
     name: kapel
@@ -33,7 +43,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 3.3.1
-    created: "2024-07-10T17:00:04.231006523-07:00"
+    created: "2024-07-12T17:32:32.906086398-07:00"
     description: APEL accounting for Kubernetes
     digest: a465fd290039cd5b8b5886c37fcf2ef4b2f9b9259eab51a81b4211f4ceb29546
     name: kapel
@@ -43,7 +53,7 @@ entries:
     version: 0.1.21
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.230412073-07:00"
+    created: "2024-07-12T17:32:32.905573661-07:00"
     description: APEL accounting for Kubernetes
     digest: 1d58ee51631d24c29433db54a935e1b374ae97457c591c63937671fcf250184e
     name: kapel
@@ -53,7 +63,7 @@ entries:
     version: 0.1.20
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.229818188-07:00"
+    created: "2024-07-12T17:32:32.905039559-07:00"
     description: APEL accounting for Kubernetes
     digest: f56c1074581144f8f2d38b232eddee78cb5a75014e951939a166d64a1e70da18
     name: kapel
@@ -63,7 +73,7 @@ entries:
     version: 0.1.19
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.229242563-07:00"
+    created: "2024-07-12T17:32:32.904515064-07:00"
     description: APEL accounting for Kubernetes
     digest: ac9d4d762ebb318c480b988c4049e6b4c182e7d876451ec7454ccde688490d6c
     name: kapel
@@ -73,7 +83,7 @@ entries:
     version: 0.1.18
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.228672405-07:00"
+    created: "2024-07-12T17:32:32.903966249-07:00"
     description: APEL accounting for Kubernetes
     digest: 236f47ba57529cf6144f3f3f77125238da07907df1028a70551d63b807fb0d94
     name: kapel
@@ -83,7 +93,7 @@ entries:
     version: 0.1.17
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.228105106-07:00"
+    created: "2024-07-12T17:32:32.903490832-07:00"
     description: APEL accounting for Kubernetes
     digest: 66f48a23efe7444d418be5a9218cf0f461189a141eb32353ea60767cfd897554
     name: kapel
@@ -93,7 +103,7 @@ entries:
     version: 0.1.16
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.227606421-07:00"
+    created: "2024-07-12T17:32:32.903016426-07:00"
     description: APEL accounting for Kubernetes
     digest: 811d19286ba5ac8be24bcf60ddf79b84764a2f3aba71ba0448c6ecb56c841b1e
     name: kapel
@@ -103,7 +113,7 @@ entries:
     version: 0.1.15
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.227060545-07:00"
+    created: "2024-07-12T17:32:32.902562283-07:00"
     description: APEL accounting for Kubernetes
     digest: c080cb3d5ac1830b4623a92627f1d354f3d37efda50fc60a80862117c58b53e0
     name: kapel
@@ -113,7 +123,7 @@ entries:
     version: 0.1.14
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.226536575-07:00"
+    created: "2024-07-12T17:32:32.902110256-07:00"
     description: APEL accounting for Kubernetes
     digest: 4ae8151504f7b2e218921b3d0b698d4e2fd6d49be244889ab2b33211dc499e30
     name: kapel
@@ -123,7 +133,7 @@ entries:
     version: 0.1.13
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.226005396-07:00"
+    created: "2024-07-12T17:32:32.901661056-07:00"
     description: APEL accounting for Kubernetes
     digest: 8e6df4574365c57c7687c601aab6898d0675739ccdd208cd62d5e5d8c542b33a
     name: kapel
@@ -133,7 +143,7 @@ entries:
     version: 0.1.12
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2024-07-10T17:00:04.225505671-07:00"
+    created: "2024-07-12T17:32:32.901191418-07:00"
     description: APEL accounting for Kubernetes
     digest: f8d3ca8d2ab3d1aaa3a8515606ec4f3ecc1f647017d43dfc51abcc168ce1eb00
     name: kapel
@@ -141,4 +151,4 @@ entries:
     urls:
     - kapel-0.1.11.tgz
     version: 0.1.11
-generated: "2024-07-10T17:00:04.224792282-07:00"
+generated: "2024-07-12T17:32:32.900564143-07:00"
