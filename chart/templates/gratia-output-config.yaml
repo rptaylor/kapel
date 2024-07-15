@@ -6,5 +6,10 @@ metadata:
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
+{{ if kindIs "string" .Values.gratia.config }}
+# Deprecated: Specify the whole ConfigMap as a multiline string
+{{ .Values.processor.config | indent 2 }}
+{{ else }}
   GRATIA_CONFIG_PATH: {{ .Values.gratia.config.gratiaConfigPath }}
+{{ end }}
 {{ end }}

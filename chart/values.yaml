@@ -38,20 +38,26 @@ processor:
       cpu: "0.5"
       memory: "500Mi"
 
-  config: null
-  clusterConfig:
+  config:
     ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat
+
+    # The name of the site being reported.
     siteName: "EXAMPLE-T2"
+    # Uniquely identifying name for the cluster.
     submitHost: "k8s.example.org:6443/namespace"
+    # Namespace of the pods for which Kuantifier will collect and report metrics.
     namespace: "harvester"
+    # VO of Jobs
     voName: "atlas"
     infrastructureType: "grid"
+    # Output path for intermediate APEL records
     outputPath: /srv/kapel
 
   # Prometheus configuration and authentication
   prometheus:
     # URL of the Prometheus server. Default value works within cluster for default bitnami/kube-prometheus Helm release.
     server: http://kube-prometheus-prometheus.kube-prometheus:9090
+    # If the Prometheus server is authorized, a secret containing the authentication header for the server
     auth:
       secret: null
       key: null
@@ -86,8 +92,8 @@ ssmsend:
 
   config:
     benchmarkValue: "15.0"
-    nodeCount: 0
-    processors: 0
+    nodeCount: "0"
+    processors: "0"
 
 gratia:
   resources:

@@ -5,16 +5,16 @@ metadata:
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
-{{ if .Values.processor.config }}
+{{ if kindIs "string" .Values.processor.config }}
 # Deprecated: Specify the whole ConfigMap as a multiline string
 {{ .Values.processor.config | indent 2 }}
 {{ else }}
-  SITE_NAME: {{ .Values.processor.clusterConfig.siteName }}
-  SUBMIT_HOST : {{ .Values.processor.clusterConfig.submitHost }}
-  NAMESPACE: {{ .Values.processor.clusterConfig.namespace }}
-  VO_NAME: {{ .Values.processor.clusterConfig.voName }}
-  INFRASTRUCTURE_TYPE: {{ .Values.processor.clusterConfig.infrastructureType }}
-  OUTPUT_PATH: {{ .Values.processor.clusterConfig.outputPath }}
+  SITE_NAME: {{ .Values.processor.config.siteName }}
+  SUBMIT_HOST : {{ .Values.processor.config.submitHost }}
+  NAMESPACE: {{ .Values.processor.config.namespace }}
+  VO_NAME: {{ .Values.processor.config.voName }}
+  INFRASTRUCTURE_TYPE: {{ .Values.processor.config.infrastructureType }}
+  OUTPUT_PATH: {{ .Values.processor.config.outputPath }}
 
   PROMETHEUS_SERVER: {{ .Values.processor.prometheus.server }}
 
@@ -25,8 +25,8 @@ data:
   QUERY_END: {{ .Values.processor.query.endDate }}
   {{ end }}
   {{ if eq .Values.outputFormat "ssmsend"}}
-  BENCHMARK_VALUE: {{ .Values.ssmsend.config.benchmarkValue }}
-  PROCESSORS: {{ .Values.ssmsend.config.processors }}
-  NODECOUNT: {{ .Values.ssmsend.config.nodeCount }}
+  BENCHMARK_VALUE: {{ .Values.ssmsend.config.benchmarkValue  | quote }}
+  PROCESSORS: {{ .Values.ssmsend.config.processors | quote  }}
+  NODECOUNT: {{ .Values.ssmsend.config.nodeCount | quote }}
   {{ end }}
 {{ end }}

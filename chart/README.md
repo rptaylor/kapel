@@ -52,14 +52,16 @@ below.
   * `.resources`: [Resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for
    the processor container. Allow approximately 10KB of memory per job record being processed.
   * `.config`: Environment variables for the processor. See [KAPELConfig.py](../python/KAPELConfig.py) for full details. 
-  Must specify at least the following:
-    * `NAMESPACE`: The namespace of the pods for which Kuantifier will collect and report metrics.
-    * `SITE_NAME`: The name of the site being reported.
-    * `SUBMIT_HOST`: Uniquely identifying name for the cluster.
-    * `VO_NAME`: VO of jobs.
-    * `BENCHMARK_VALUE`: The value to use for normalizing by CPU performance. Required for APEL accounting.
-  * `.prometheus_auth`: If your Prometheus instance is configured to require [Authentication](https://prometheus.io/docs/prometheus/latest/configuration/https/)
-    from within the cluster, specify a Secret containing a value for the authentication header.
+  Must specify at least the following sub-fields:
+    * `.namespace`: The namespace of the pods for which Kuantifier will collect and report metrics.
+    * `.siteName`: The name of the site being reported.
+    * `.submitHost`: Uniquely identifying name for the cluster.
+    * `.voName`: VO of jobs.
+  * `.prometheus`: Config for connecting to your cluster's Prometheus instance. Has the following sub-fields:
+    * `.server`: Required. URL of your cluster's prometheus server.
+    * `.auth.secret`: Optional. If your Prometheus instance is configured to require [Authentication](https://prometheus.io/docs/prometheus/latest/configuration/https/) from within the cluster, 
+    specify a Secret containing a value for the authentication header.
+    * `.auth.key`: Optional. If using a secret for authentication, which key within the secret to use as the auth header.
  
 #### Gratia Output Configuration
 
@@ -80,3 +82,7 @@ The following values only apply if `.Values.outputFormat` equals `"ssmsend"`:
   * `.image_tag`: Optionally specify an image version.
   * `.resources`: Resource requests and limits for the SSM output container.
   * `.x509cert` and `.x509key`: Base64-encoded public cert and private key for content signing when sending messages with SSM for APEL.
+  * `.config`: Environment variables for the processor that determine ssmsend-specific behavior. Sub-fields include:
+    * `.benchmarkValue`: Required: The value to use for normalizing by CPU performance.
+    * `.nodeCount`: Optional: Number of nodes the report summarizes over.
+    * `.processors`: Optional: Number of processors the report summarizes over.
