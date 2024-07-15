@@ -39,8 +39,6 @@ processor:
       memory: "500Mi"
 
   config:
-    ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat
-
     # The name of the site being reported.
     siteName: "EXAMPLE-T2"
     # Uniquely identifying name for the cluster.
@@ -49,6 +47,7 @@ processor:
     namespace: "harvester"
     # VO of Jobs
     voName: "atlas"
+    # Infrastructure Type
     infrastructureType: "grid"
     # Output path for intermediate APEL records
     outputPath: /srv/kapel
@@ -62,11 +61,15 @@ processor:
       secret: null
       key: null
 
-  # Configuration for 
+  # Configuration for the prometheus query used to generate reports
   query:
+    # "Auto" to report on the most recent month of data, "gap" to report on a specific time interval
     mode: "auto"
+    # Exit with an error if the query does not complete within the timeout
     timeout: "1800s"
+    # Start date for gap reporting
     startDate: null
+    # End date for gap reporting
     endDate: null
 
 
@@ -90,9 +93,13 @@ ssmsend:
   x509cert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgY2VydCBmb3IgQVBFTCBwdWJsaXNoZXIK
   x509key: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGtleSBmb3IgQVBFTCBwdWJsaXNoZXIK
 
+  # Environment variables for the processor that determine ssmsend-specific behavior. 
   config:
+    # The value to use for normalizing by CPU performance.
     benchmarkValue: "15.0"
+    # Number of nodes the report summarizes over.
     nodeCount: "0"
+    # Number of processors the report summarizes over.
     processors: "0"
 
 gratia:
