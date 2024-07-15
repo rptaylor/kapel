@@ -89,12 +89,12 @@ spec:
                 - name: SUMMARIZE_RECORDS
                   value: "False"
                 {{ end }}
-                {{ if .Values.processor.prometheus_auth.secret }}
+                {{ if .Values.processor.prometheus.auth.secret }}
                 - name: PROMETHEUS_AUTH_HEADER
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.processor.prometheus_auth.secret }}
-                      key: {{ .Values.processor.prometheus_auth.key }}
+                      name: {{ .Values.processor.prometheus.auth.secret }}
+                      key: {{ .Values.processor.prometheus.auth.key }}
                 {{ end }}
               envFrom:
                 - configMapRef:

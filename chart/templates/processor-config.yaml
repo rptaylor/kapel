@@ -5,4 +5,28 @@ metadata:
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
+{{ if .Values.processor.config }}
+# Deprecated: Specify the whole ConfigMap as a multiline string
 {{ .Values.processor.config | indent 2 }}
+{{ else }}
+  SITE_NAME: {{ .Values.processor.clusterConfig.siteName }}
+  SUBMIT_HOST : {{ .Values.processor.clusterConfig.submitHost }}
+  NAMESPACE: {{ .Values.processor.clusterConfig.namespace }}
+  VO_NAME: {{ .Values.processor.clusterConfig.voName }}
+  INFRASTRUCTURE_TYPE: {{ .Values.processor.clusterConfig.infrastructureType }}
+  OUTPUT_PATH: {{ .Values.processor.clusterConfig.outputPath }}
+
+  PROMETHEUS_SERVER: {{ .Values.processor.prometheus.server }}
+
+  PUBLISHING_MODE: {{ .Values.processor.query.mode }}
+  QUERY_TIMEOUT: {{ .Values.processor.query.timeout }}
+  {{ if eq .Values.processor.query.mode "gap"}}
+  QUERY_START: {{ .Values.processor.query.startDate }}
+  QUERY_END: {{ .Values.processor.query.endDate }}
+  {{ end }}
+  {{ if eq .Values.outputFormat "ssmsend"}}
+  BENCHMARK_VALUE: {{ .Values.ssmsend.config.benchmarkValue }}
+  PROCESSORS: {{ .Values.ssmsend.config.processors }}
+  NODECOUNT: {{ .Values.ssmsend.config.nodeCount }}
+  {{ end }}
+{{ end }}

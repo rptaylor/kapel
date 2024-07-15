@@ -37,18 +37,31 @@ processor:
     requests:
       cpu: "0.5"
       memory: "500Mi"
-  # See KAPELConfig.py for full details on required configuration.
-  config: |
-    SITE_NAME: "EXAMPLE-T2"
-    SUBMIT_HOST: "k8s.example.org:6443/namespace"
-    #BENCHMARK_VALUE: "15.0"
-    #NAMESPACE: "harvester"
-    #VO_NAME: "atlas"
 
-  # Authentication secret for Prometheus, if any
-  prometheus_auth:
-    secret: null
-    key: null
+  config: null
+  clusterConfig:
+    ## Info for APEL records, see https://wiki.egi.eu/wiki/APEL/MessageFormat
+    siteName: "EXAMPLE-T2"
+    submitHost: "k8s.example.org:6443/namespace"
+    namespace: "harvester"
+    voName: "atlas"
+    infrastructureType: "grid"
+    outputPath: /srv/kapel
+
+  # Prometheus configuration and authentication
+  prometheus:
+    # URL of the Prometheus server. Default value works within cluster for default bitnami/kube-prometheus Helm release.
+    server: http://kube-prometheus-prometheus.kube-prometheus:9090
+    auth:
+      secret: null
+      key: null
+
+  # Configuration for 
+  query:
+    mode: "auto"
+    timeout: "1800s"
+    startDate: null
+    endDate: null
 
 
 ssmsend:
@@ -71,6 +84,11 @@ ssmsend:
   x509cert: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwdWJsaWMgY2VydCBmb3IgQVBFTCBwdWJsaXNoZXIK
   x509key: aW5zZXJ0IGJhc2U2NC1lbmNvZGVkIHN0cmluZyBvZiB0aGUgWDUwOSBwcml2YXRlIGtleSBmb3IgQVBFTCBwdWJsaXNoZXIK
 
+  config:
+    benchmarkValue: "15.0"
+    nodeCount: 0
+    processors: 0
+
 gratia:
   resources:
     limits:
@@ -83,10 +101,10 @@ gratia:
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-gratia-output"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
-  # Config options for Gratia. At present, only GRATIA_CONFIG_PATH can be specified,
+  # Config options for Gratia. At present, only gratiaConfigPath can be specified,
   # And points to the default Gratia config file.
-  config: |
-    GRATIA_CONFIG_PATH: "/etc/gratia/kubernetes/ProbeConfig"
+  config:
+    gratiaConfigPath: "/etc/gratia/kubernetes/ProbeConfig"
 
 
 nameOverride: ""

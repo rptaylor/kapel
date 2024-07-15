@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
-{{ .Values.gratia.config | indent 2 }}
+  GRATIA_CONFIG_PATH: {{ .Values.gratia.config.gratiaConfigPath }}
 {{ end }}
