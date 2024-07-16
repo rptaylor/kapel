@@ -40,11 +40,10 @@ below.
 * `.Values.pspName`: If specified, a [Pod Security Policy](https://kubernetes.io/docs/concepts/security/pod-security-policy/)
     name to use. Deprecated in newer versions of Kubernetes.
 * `.Values.user`: Can be used to change the [user id and group id](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) the pod runs as if needed.
-
+* `.Values.containerSecurityContext`: For configuring the securityContext of containers.
 * `.Values.dataVolumeSize`: The size of the volume where Kuantifier stores its intermediate results between querying Prometheus
   and outputting to an external service. Note that Gratia output may require a significantly larger data volume size, as it operates
   on non-summarized records.
-
 * `.Values.processor`: Configuration for the container that queries Prometheus to generate Job metric records.
   * `.image_repository`: OCI image repository from which to pull the processor image.
   * `.image_tag`: Optionally specify an image version.

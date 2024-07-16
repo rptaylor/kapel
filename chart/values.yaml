@@ -24,6 +24,14 @@ user:
 # outputs individual records rather than summaries, and may require a larger data volume size.
 dataVolumeSize: 1000M
 
+# container-level securityContext
+containerSecurityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
 processor:
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-processor"
   # Optionally overwrite container version. Default is chart appVersion.
@@ -49,7 +57,6 @@ processor:
   prometheus_auth:
     secret: null
     key: null
-
 
 ssmsend:
   resources:

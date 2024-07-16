@@ -69,6 +69,10 @@ spec:
               workingDir: /src
               command: [ "python3" ]
               args: [ "KAPEL.py" ]
+              {{- if .Values.containerSecurityContext }}
+              securityContext:
+                {{- toYaml .Values.containerSecurityContext | nindent 16 }}
+              {{- end }}
               resources:
                 {{- toYaml .Values.processor.resources | nindent 16 }}
               env:
@@ -130,6 +134,10 @@ spec:
               {{ else }}
               args: ["-c", "mkdir $HOME; echo 'ssmsend disabled'; sleep 3600"]
               {{ end }}
+              {{- if .Values.containerSecurityContext }}
+              securityContext:
+                {{- toYaml .Values.containerSecurityContext | nindent 16 }}
+              {{- end }}
               env:
                 # for openssl ~/.rnd
                 - name: HOME
