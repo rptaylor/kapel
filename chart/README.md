@@ -56,7 +56,7 @@ below.
     * `SITE_NAME`: The name of the site being reported.
     * `SUBMIT_HOST`: Uniquely identifying name for the cluster.
     * `VO_NAME`: VO of jobs.
-    * `PROMETHEUS_SERVER`: Internal DNS name for the cluster's Prometheus instance
+    * `PROMETHEUS_SERVER`: DNS name for the cluster's Prometheus instance. The default value works with a default installation of the bitnami/kube-prometheus Helm chart. Otherwise, for a Prometheus instance internal to the cluster, [construct](https://kubernetes.io/docs/concepts/services-networking/service/#dns) the URL based on the standard Kubernetes service discovery mechanism (i.e. service name and namespace).
     * `BENCHMARK_VALUE`: The value to use for normalizing by CPU performance. Required for APEL accounting.
   * `.prometheus_auth`: If your Prometheus instance is configured to require [Authentication](https://prometheus.io/docs/prometheus/latest/configuration/https/)
     from within the cluster, specify a Secret containing a value for the authentication header.

@@ -57,7 +57,7 @@ processor:
     NAMESPACE: "example-namespace"
     # Virtual Organization Name
     VO_NAME: "example-vo"
-    # Cluster-internal DNS name for the cluster's Prometheus server
+    # Works for a default installation of the bitnami/kube-prometheus Helm chart, otherwise use http://<service>.<namespace>:<port>
     PROMETHEUS_SERVER: "http://kube-prometheus-prometheus.kube-prometheus:9090"
     # Value to use for normalizing by CPU performance. Required for ssmsend output mode only
     BENCHMARK_VALUE: "15.0"
