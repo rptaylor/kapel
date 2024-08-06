@@ -47,13 +47,20 @@ processor:
     requests:
       cpu: "0.5"
       memory: "500Mi"
-  # See KAPELConfig.py for full details on required configuration.
-  config: |
+  # Config values for the processor initContainer. See KAPELConfig.py for full details on required configuration.
+  config:
+    # Name of the site being reported on
     SITE_NAME: "EXAMPLE-T2"
+    # Uniquely identifying name for the cluster
     SUBMIT_HOST: "k8s.example.org:6443/namespace"
-    #BENCHMARK_VALUE: "15.0"
-    #NAMESPACE: "harvester"
-    #VO_NAME: "atlas"
+    # Namespace in the cluster where pilot jobs run
+    NAMESPACE: "example-namespace"
+    # Virtual Organization Name
+    VO_NAME: "example-vo"
+    # Cluster-internal DNS name for the cluster's Prometheus server
+    PROMETHEUS_SERVER: "http://kube-prometheus-prometheus.kube-prometheus:9090"
+    # Value to use for normalizing by CPU performance. Required for ssmsend output mode only
+    BENCHMARK_VALUE: "15.0"
 
   # Authentication secret for Prometheus, if any
   prometheus_auth:
@@ -92,9 +99,9 @@ gratia:
   image_repository: "hub.opensciencegrid.org/osgpreview/kapel-gratia-output"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
-  # Config options for Gratia. At present, only GRATIA_CONFIG_PATH can be specified,
-  # And points to the default Gratia config file.
-  config: |
+  # Config options for Gratia.
+  config: 
+    # Location of the Gratia probe config file. Can usually be kept as default
     GRATIA_CONFIG_PATH: "/etc/gratia/kubernetes/ProbeConfig"
 
 

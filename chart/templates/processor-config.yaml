@@ -5,4 +5,6 @@ metadata:
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
-{{ .Values.processor.config | indent 2 }}
+{{- range $key, $value := .Values.processor.config }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
