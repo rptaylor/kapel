@@ -37,6 +37,14 @@ spec:
             runAsGroup: {{ .Values.user.gid }}
             fsGroup: {{ .Values.user.gid }}
             {{ end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumes:
             {{ if eq .Values.outputFormat "ssmsend" }}
             - name: ssmsend-config-volume
