@@ -37,6 +37,10 @@ below.
   * `.priorityClassName`: [Priority Class](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/) for the
     pods that run the Kuantifier job.
   * `.ttlSecondsAfterFinished`: Duration to persist completed pods after completion. 
+  * `.nodeSelector`: Optional, set the [nodeSelector](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/)
+    for pods created by the CronJob
+  * `.tolerations`: Optional, set the [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+    for pods created by the CronJob
 * `.Values.pspName`: If specified, a [Pod Security Policy](https://kubernetes.io/docs/concepts/security/pod-security-policy/)
     name to use. Deprecated in newer versions of Kubernetes.
 * `.Values.user`: Can be used to change the [user id and group id](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) the pod runs as if needed.

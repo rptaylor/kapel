@@ -3,6 +3,18 @@ cronjob:
   priorityClassName: ""
   ttlSecondsAfterFinished: 7776000
 
+  # Optional: Set [nodeSelector](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/) for
+  # pods created by the cronjob
+  # nodeSelector:
+  #   disktype: ssd
+
+  # Optional: Set [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) for
+  # pods created by the cronjob
+  # tolerations:
+  # - key: "sample"
+  #   operator: "Exists"
+  #   effect: "NoSchedule"
+
 # "ssmsend" or "gratia"
 outputFormat: ssmsend
 
