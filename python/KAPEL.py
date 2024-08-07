@@ -271,11 +271,14 @@ def record_individual_period(config, results):
         # Only report on pods that have completed. Running pods won't have an endtime
         if not ('starttime' in records and 'endtime' in records):
             continue
+        processors = records.get('cores', 0) or config.processors
+        assert processors > 0, \
+            "must specify core count via pod resource requests or PROCESSORS config var"
         individual_output = individual_message(
             config, 
             pod_name,
             records.get('memory', 0),
-            records.get('cores', 0),
+            processors,
             records['endtime'] - records['starttime'],
             records.get('cpuusage', 0),
             records['starttime'],
