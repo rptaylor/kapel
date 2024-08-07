@@ -11,9 +11,8 @@ class KAPELConfig:
         # Read a .env file if one is specified, otherwise only environment variables will be used.
         env.read_env(envFile, recurse=False, verbose=True)
 
-        # URL of the Prometheus server. Default value works within cluster for default bitnami/kube-prometheus Helm release.
-        # Format: validity is determined by python urllib.parse.
-        self.prometheus_server = env.url("PROMETHEUS_SERVER", "http://kube-prometheus-prometheus.kube-prometheus:9090").geturl()
+        # URL of the Prometheus server. The required format is based on python urllib.parse.
+        self.prometheus_server = env.url("PROMETHEUS_SERVER").geturl()
 
         # Optionally add authentication headers - these are passed in under "Authorization"
         self.auth_header = env.str("PROMETHEUS_AUTH_HEADER", None)

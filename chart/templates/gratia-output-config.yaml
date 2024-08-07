@@ -6,5 +6,7 @@ metadata:
   labels:
     {{- include "kapel.labels" . | nindent 4 }}
 data:
-{{ .Values.gratia.config | indent 2 }}
+{{- range $key, $value := .Values.gratia.config }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
 {{ end }}
