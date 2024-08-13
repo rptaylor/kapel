@@ -267,13 +267,18 @@ def record_individual_period(config, results):
             per_pod_records[pod][data_type] = val
     
     dirq = QueueSimple(str(config.output_path))
+    skipped_records = 0
     for pod_name, records in per_pod_records.items():
         # Only report on pods that have completed. Running pods won't have an endtime
         if not ('starttime' in records and 'endtime' in records):
             continue
+
+        # If we can't determine the processor count for a pod, skip it with a warning
         processors = records.get('cores', 0) or config.processors
-        assert processors > 0, \
-            "must specify core count via pod resource requests or PROCESSORS config var"
+        if not processors:
+            skipped_records += 1
+            continue
+
         individual_output = individual_message(
             config, 
             pod_name,
@@ -287,6 +292,9 @@ def record_individual_period(config, results):
         print(f'Writing individual record to {config.output_path}/{record_file}:')
         print('--------------------------------\n' + individual_output + '--------------------------------')
     
+    if skipped_records > 0:
+        print(f"WARNING: Skipped {skipped_records} records due to missing processor count. "
+               "Please set pod resource requests or specify the PROCESSORS config var.")
 
 # process a time period (do prom query, process data, write output)
 # takes a KAPELConfig object and one element of output from get_time_periods
