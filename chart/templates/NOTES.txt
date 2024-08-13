@@ -1,1 +1,17 @@
 1. The kapel accounting cron job should be running now. When the kapel pod runs check the logs of the processor and ssmsend containers.
+
+{{ if not .Values.processor.config.NAMESPACE  -}}
+WARNING: processor.config.NAMESPACE is empty in values.yaml. Set it to the namespace in the cluster where your workload jobs run.
+{{ end -}}
+
+{{ if not .Values.processor.config.SITE_NAME -}}
+WARNING: processor.config.SITE_NAME is empty in values.yaml. Set it to the name of the site being reported on.
+{{ end -}}
+
+{{ if not .Values.processor.config.SUBMIT_HOST -}}
+WARNING: processor.config.SUBMIT_HOST is empty in values.yaml. Set it to a uniquely identifying domain name for your cluster.
+{{ end -}}
+
+{{ if not .Values.processor.config.VO_NAME -}}
+WARNING: processor.config.VO_NAME is empty in values.yaml. Set it to the Virtual Organization 
+{{ end -}}

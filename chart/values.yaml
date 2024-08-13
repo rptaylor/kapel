@@ -50,11 +50,14 @@ processor:
   # Config values for the processor initContainer. See KAPELConfig.py for full details on required configuration.
   config:
     # Name of the site being reported on
-    SITE_NAME: "EXAMPLE-T2"
+    # SITE_NAME: "EXAMPLE-T2"
+    
     # Uniquely identifying name for the cluster
-    SUBMIT_HOST: "k8s.example.org:6443/namespace"
+    # SUBMIT_HOST: "k8s.example.org:6443/namespace"
+    
     # Namespace in the cluster where pilot jobs run
-    NAMESPACE: "example-namespace"
+    # NAMESPACE: "example-namespace"
+    
     # Virtual Organization Name
     VO_NAME: "example-vo"
     # Works for a default installation of the bitnami/kube-prometheus Helm chart, otherwise use http://<service>.<namespace>:<port>
