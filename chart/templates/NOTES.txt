@@ -11,7 +11,3 @@ WARNING: processor.config.SITE_NAME is empty in values.yaml. Set it to the name 
 {{ if not .Values.processor.config.SUBMIT_HOST -}}
 WARNING: processor.config.SUBMIT_HOST is empty in values.yaml. Set it to a uniquely identifying domain name for this cluster.
 {{ end -}}
-
-{{ if not .Values.processor.config.VO_NAME -}}
-WARNING: processor.config.VO_NAME is empty in values.yaml. Set it to the Virtual Organization the site is participating in.
-{{ end -}}
