@@ -1,5 +1,9 @@
 1. The kapel accounting cron job should be running now. When the kapel pod runs check the logs of the processor and ssmsend containers.
 
+{{ if and (not .Values.processor.config.PROCESSORS) (eq .Values.outputFormat "gratia") -}}
+NOTE: processor.config.PROCESSORS is not set by default. Ensure that workload pods have a CPU resource request defined or they will not be accounted.
+{{ end -}}
+
 {{ if not .Values.processor.config.NAMESPACE -}}
 WARNING: processor.config.NAMESPACE is empty in values.yaml. Set it to the namespace in the cluster where your workload pods run.
 {{ end -}}
