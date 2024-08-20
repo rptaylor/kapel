@@ -47,7 +47,7 @@ containerSecurityContext:
     type: RuntimeDefault
 
 processor:
-  image_repository: "hub.opensciencegrid.org/osgpreview/kapel-processor"
+  image_repository: "hub.opensciencegrid.org/iris-hep/kuantifier-processor"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
   image_pull_policy: "IfNotPresent"
@@ -111,7 +111,7 @@ gratia:
       cpu: "0.1"
       memory: "50Mi"
   # Location of gratia output container.
-  image_repository: "hub.opensciencegrid.org/osgpreview/kapel-gratia-output"
+  image_repository: "hub.opensciencegrid.org/iris-hep/kuantifier-gratia-output"
   # Optionally overwrite container version. Default is chart appVersion.
   image_tag: ""
   # Config options for Gratia.

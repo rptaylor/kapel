@@ -119,7 +119,7 @@ spec:
           containers:
           {{ if eq .Values.outputFormat "gratia" }}
             - name: gratia-output
-              image: {{ .Values.gratia.image_repository}}:{{ .Values.gratia.image_tag | default .Chart.AppVersion }}
+              image: {{ .Values.gratia.image_repository}}:{{ .Values.gratia.image_tag | default .Chart.Version }}
               workingDir: /gratia
               command: [ "python3" ]
               args: [ "kubernetes_meter.py" ]
