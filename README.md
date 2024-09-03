@@ -1,5 +1,5 @@
-# KAPEL 
-KAPEL is container-native Kubernetes accounting, for APEL and Gratia.
+# Kuantifier
+Kuantifier (previously known as KAPEL) is container-native Kubernetes accounting, for APEL and Gratia.
 - Lightweight and stateless (data storage is handled by Prometheus).
 - Supports two publishing modes:
   - "auto" mode to publish the current month and previous month.
@@ -34,10 +34,9 @@ To do accounting for different projects in multiple namespaces, a KAPEL chart ca
 
 ## Configuration
 - See [kube-prometheus-example.yaml](docs/kube-prometheus-example.yaml) for an example values file to use for installation of the Bitnami kube-prometheus Helm chart.
-- See [values.yaml](chart/values.yaml) for the configurable values of the KAPEL Helm chart.
-- See [KAPELConfig.py](python/KAPELConfig.py) for descriptions of the settings used in KAPEL.
+- See [values.yaml](chart/values.yaml) for the configurable values of the Kuantifier Helm chart.
+- See [KAPELConfig.py](python/KAPELConfig.py) for descriptions of the settings used in Kuantifier.
 
 ## Helm chart installation
-The KAPEL Helm chart is available from [this Helm repository](https://rptaylor.github.io/kapel/).
 
-See the [Helm Chart README](chart/README.md) for additional information.
+See the [Helm Chart README](chart/README.md) for details on installing the Helm chart.
