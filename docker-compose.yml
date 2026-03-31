@@ -1,6 +1,10 @@
 services:
   kapel-processor:
-    image: hub.opensciencegrid.org/iris-hep/kuantifier-processor:1.0.2
+    image: hub.opensciencegrid.org/iris-hep/kuantifier-processor:1.1.0
     build:
       context: .
       network: host
+  runtime-exporter:
+    image: hub.opensciencegrid.org/iris-hep/kuantifier-runtime-exporter:1.0.1
+    build:
+      context: runtime_exporter

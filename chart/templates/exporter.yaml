@@ -1,0 +1,160 @@
+{{ if .Values.exporter.enabled }}
+
+############################################
+# ServiceAccount and RBAC for Exporter
+############################################
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-runtime-exporter
+  namespace: {{ .Release.Namespace }} # Place the service account in the same namespace as the helm release
+  labels:
+    app: {{ .Release.Name }}-runtime-exporter
+    component: metrics
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-runtime-exporter
+  namespace: {{ .Values.processor.config.NAMESPACE | default "default" }} # Add a pod-read role in the namespace being monitored
+  labels:
+    app: {{ .Release.Name }}-runtime-exporter
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-runtime-exporter
+  namespace:  {{ .Values.processor.config.NAMESPACE | default "default" }} # Bind the role in the namespace being monitored ...
+  labels:
+    app: {{ .Release.Name }}-runtime-exporter
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-runtime-exporter
+  namespace: {{ .Release.Namespace }} # ... To the service account in the helm release namespace
+roleRef:
+  kind: Role
+  name: {{ .Release.Name }}-runtime-exporter
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+############################################
+# Deployment for Exporter
+############################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-runtime-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-runtime-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-runtime-exporter
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-runtime-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.exporter.config.METRICS_PORT }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ .Release.Name }}-runtime-exporter
+      containers:
+      - name: exporter
+        image: {{ .Values.exporter.image_repository }}:{{ .Values.exporter.image_tag }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NAMESPACE
+          value: {{ .Values.processor.config.NAMESPACE | default "default" }}
+        {{- range $key, $value := .Values.exporter.config }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.exporter.config.METRICS_PORT | atoi }}
+          name: metrics
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: {{ .Values.exporter.config.METRICS_PORT | atoi }}
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: {{ .Values.exporter.config.METRICS_PORT | atoi }}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+
+---
+
+############################################
+# Service for Exporter
+############################################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-runtime-exporter
+  labels:
+    app: {{ .Release.Name }}-runtime-exporter
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name }}-runtime-exporter
+  ports:
+  - name: metrics
+    protocol: TCP
+    port: {{ .Values.exporter.config.METRICS_PORT | atoi }}
+    targetPort: metrics
+
+---
+
+############################################
+# ServiceMonitor for Exporter
+############################################
+
+{{ if .Values.exporter.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-runtime-exporter-servicemonitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: monitoring-kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-runtime-exporter
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      honorLabels: true
+{{ end }}
+
+{{ end }}

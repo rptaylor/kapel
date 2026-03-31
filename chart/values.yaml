@@ -49,7 +49,7 @@ containerSecurityContext:
 processor:
   image_repository: "hub.opensciencegrid.org/iris-hep/kuantifier-processor"
   # Optionally overwrite container version.
-  image_tag: "1.0.2"
+  image_tag: "1.1.0"
   image_pull_policy: "IfNotPresent"
   resources:
     # very generous estimate: approx 10 KiB memory per job record
@@ -81,6 +81,34 @@ processor:
   prometheus_auth:
     secret: null
     key: null
+  
+# Custom prometheus end-time exporter for workloads where endtime of a pod cannot be reliably determined by 
+# kube-state-metrics (such as Deployments that do not remain in the Completed state post-termination)
+exporter:
+  enabled: false
+
+  image_repository: "hub.opensciencegrid.org/iris-hep/kuantifier-runtime-exporter"
+  # Optionally overwrite container version.
+  image_tag: "1.0.0"
+  image_pull_policy: "IfNotPresent"
+
+  # Gate for creating a Prometheus ServiceMonitor custom resource
+  # CRD should be installed by most Prometheus helm charts
+  serviceMonitor:
+    enabled: true
+
+  config:
+    # Prefix for identifying workload pods
+    POD_NAME_PREFIX: ""
+
+    # Port on which to expose Prometheus metrics
+    METRICS_PORT: "9100"
+
+    # Frequency (in seconds) with which to scan for pods
+    SCAN_INTERVAL_SECONDS: "30"
+
+    # Number of scans a pod can be missing before it is considered gone
+    MISSING_TOLERANCE: "1"
 
 ssmsend:
   resources:
